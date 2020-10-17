@@ -36,7 +36,7 @@ dataset = fread(dataset_path, stringsAsFactors= TRUE)
 dataset  <-  na.roughfix( dataset )
 
 # armo clase binaria 'baja':['si' , 'no']
-dataset[, baja := ifelse(clase_ternaria == 'BAJA+2', 'si', 'no')]
+dataset[, baja := as.factor(ifelse(clase_ternaria == 'BAJA+2', 'si', 'no'))]
 
 # y elimino la clase ternaria
 dataset[, clase_ternaria := NULL]
