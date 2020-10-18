@@ -5,10 +5,13 @@ rm( list=ls() )
 
 require(data.table)
 require(rutiles)
-require(ranger)
+# require(ranger)
 require(randomForest) # solo para na.roughfix
 
 args = commandArgs(trailingOnly=TRUE)
+
+# PARA DEBUG
+# args = c('iguala', '201911', '202001', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/ranger_basico.csv')
 
 # test if there is at least one argument: if not, return an error
 path_salida = '~/ranger_basico.csv'
@@ -30,16 +33,7 @@ foto_mes_evaluacion = as.integer(args[3])
 dataset_path = args[4]
 
 # levanto dataset
-dataset = fread(dataset_path, stringsAsFactors= TRUE)
-
-# corrijo nulos
-dataset  <-  na.roughfix( dataset )
-
-# armo clase binaria 'baja':['si' , 'no']
-dataset[, baja := as.factor(ifelse(clase_ternaria == 'BAJA+2', 'si', 'no'))]
-
-# y elimino la clase ternaria
-dataset[, clase_ternaria := NULL]
+dataset = levantar_clientes(path = dataset_path, nombre_clase_binaria = 'baja', positivo = 'si', negativo = 'no', fix_nulos = T)
 
 if (comparacion == 'mayora') {
   entrenamiento = dataset[  foto_mes >= foto_mes_entrenamiento, ]
@@ -51,32 +45,7 @@ if (comparacion == 'mayora') {
   stop('el 1er parametro tiene que ser "mayora", "menora" o "iguala"')
 }
 
-# corro random forest
-set.seed(200)
-modelo = ranger( formula = "baja ~ .",
-                   data = entrenamiento,
-                   probability =   TRUE,  #para que devuelva las probabilidades
-                   num.trees =     500,
-                   mtry =          3,
-                   min.node.size = 1,
-                   max.depth =     0
-)
-
-# armo los datos de evaluacion
-evaluacion = dataset[foto_mes == foto_mes_evaluacion, ]
-
-# hago la prediccion y la guardo en una data.table
-set.seed(200)
-prediccion = predict(modelo, evaluacion)
-predicciones = as.data.table(prediccion$predictions)
-
-# armo la columna 'estimulo':[1,0]
-predicciones[, estimulo := ifelse(si > 0.025, as.integer(1), as.integer(0))]
-
-# armo data para calcular ganancia.
-dganancia = data.table(real=evaluacion[, ifelse(baja=='si',as.integer(1),as.integer(0))], prediccion=predicciones[, estimulo])
-rutiles::ganancia(data = dganancia) # calculo ganancia
-
-# armo data para escribir output para kaggle
-dkaggle = data.frame(numero_de_cliente=evaluacion[, numero_de_cliente], estimulo=predicciones[, estimulo])
-rutiles::kaggle_csv(dkaggle, path = path_salida) # escribo output para kaggle
+rutiles::rf_ranger(a_predecir = 'baja', positivo = 'si',
+                   n_arboles = 500, n_split = 3, nodo_min = 1, profundidad_max = 0,
+                   salida_csv = path_salida,
+                   entrenamiento = entrenamiento, evaluacion = dataset[foto_mes == foto_mes_evaluacion, ])
