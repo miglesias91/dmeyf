@@ -143,7 +143,7 @@ jsonsalida = paste0(
 "n_arboles" : ', run$x$pnum.trees,',
 "n_split" : ', run$x$pmtry,',
 "nodo_min" : ', run$x$pmin.node.size,',
-"profundidad_max" :', run$x$pmax_depth,
+"profundidad_max" :', run$x$pmax.depth,
 '
 }'
 )
