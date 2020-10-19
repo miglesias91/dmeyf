@@ -31,10 +31,10 @@ foto_mes_entrenamiento = as.integer(args[2])
 foto_mes_evaluacion = as.integer(args[3])
 dataset_path = args[4]
 path_salida = args[5]
-n_arboles = args[6]
-n_split = args[7]
-nodo_min = args[8]
-profundidad = args[9]
+n_arboles = as.integer(args[6])
+n_split = as.integer(args[7])
+nodo_min = as.integer(args[8])
+profundidad = as.integer(args[9])
 
 # levanto dataset
 dataset = levantar_clientes(path = dataset_path, nombre_clase_binaria = 'baja', positivo = 'si', negativo = 'no', fix_nulos = T)
