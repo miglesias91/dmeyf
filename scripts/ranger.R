@@ -34,7 +34,7 @@ path_salida = args[5]
 n_arboles = as.integer(args[6])
 n_split = as.integer(args[7])
 nodo_min = as.integer(args[8])
-profundidad = as.integer(args[9])
+profundidad_max = as.integer(args[9])
 
 # levanto dataset
 dataset = levantar_clientes(path = dataset_path, nombre_clase_binaria = 'baja', positivo = 'si', negativo = 'no', fix_nulos = T)
