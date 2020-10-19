@@ -11,7 +11,7 @@ require(randomForest) # solo para na.roughfix
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-# args = c('iguala', '201911', '202001', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/ranger_basico.csv')
+# args = c('iguala', '201911', '202001', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/ranger_basico.csv', 610, 20, 25, 12)
 
 if (  length(args) != 9) {
   stop("Tienen que ser 9 parametros:
