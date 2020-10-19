@@ -128,7 +128,7 @@ if(!file.exists(rdata)) {
       'mtry', '\t', 
       'min.node.size', '\t',
       'max.depth', '\t',
-      'ganancia', '\n')
+      'ganancia','\t','n_iteraciones: ', n_iteraciones, '\n')
   
   # INICIO EJECUCIÓN DESDE CERO
   run = mbo(funcion_objetivo, learner = aprendedor, control = control)
