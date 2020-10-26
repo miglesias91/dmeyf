@@ -41,7 +41,7 @@ correccion_catedra = as.logical(args[10])
 dataset_path = args[11]
 path_salida = args[12]
 
-dataset_standar = levantar_clientes(path = dataset_path)
+dataset = levantar_clientes(path = dataset_path)
 
 datase = rutiles::feature_eng(dataset,
                               combinar_tarjetas = combinar_tarjetas,
