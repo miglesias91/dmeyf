@@ -4,6 +4,7 @@
 rm( list=ls() )
 
 require(data.table)
+require(stringr)
 require(rutiles)
 
 args = commandArgs(trailingOnly=TRUE)
