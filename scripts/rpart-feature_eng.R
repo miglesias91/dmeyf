@@ -10,7 +10,7 @@ require(rutiles)
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-# args = c('iguala', '201909', '201911', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/ranger_basico.csv', 610, 20, 25, 12)
+# args = c('201908', '201909', '201911', 'T', '2', '201911', '10', 'F', 'T', 'T', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/ranger_basico.csv')
 
 if (  length(args) != 12) {
   stop("Tienen que ser 12 parametros:
@@ -44,7 +44,7 @@ path_salida = args[12]
 
 dataset = levantar_clientes(path = dataset_path)
 
-datase = rutiles::feature_eng(dataset,
+dataset = rutiles::feature_eng(dataset,
                               combinar_tarjetas = combinar_tarjetas,
                               historico_de = ventana_historico, historico_desde = historico_desde,
                               historicos_de_tarjetas = historico_de_combi_de_tarjetas,
