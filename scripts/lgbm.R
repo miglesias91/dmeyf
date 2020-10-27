@@ -35,7 +35,7 @@ log = as.integer(args[7])
 dataset_path = args[8]
 path_salida = args[9]
 
-dataset = levantar_clientes(path = dataset_path)
+dataset = levantar_clientes(path = dataset_path, corregir_clase = F)
 
 dataset[, baja := ifelse(baja == 'si', 1L, 0L)]
 
