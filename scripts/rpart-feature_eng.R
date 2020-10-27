@@ -9,7 +9,7 @@ require(rutiles)
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-args = c('201908', '201909', '201911', '2', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/ranger_basico.csv')
+# args = c('201908', '201909', '201911', '2', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/ranger_basico.csv')
 
 if (  length(args) != 6) {
   stop("Tienen que ser 6 parametros:
