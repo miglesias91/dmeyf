@@ -10,7 +10,7 @@ require(lightgbm)
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-args = c('201906', '201911', '202001', '100', '0.001', '100', '1', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/lgbm_basico.csv')
+# args = c('201906', '201911', '202001', '100', '0.001', '100', '1', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/lgbm_basico.csv')
 
 if (  length(args) != 9) {
   stop("Tienen que ser 9 parametros:
