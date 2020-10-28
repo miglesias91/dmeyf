@@ -69,8 +69,7 @@ ganancia_ranger = function( x )
       x$pmtry, "\t",
       x$pmin.node.size, "\t",
       x$pmax.depth, "\t",
-      g, "\n"
-  )
+      g, "\n")
   
   return(g)
 }
