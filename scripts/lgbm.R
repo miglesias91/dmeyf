@@ -8,19 +8,23 @@ args = commandArgs(trailingOnly=TRUE)
 # PARA DEBUG
 # args = c('201906', '201911', '202001', '100', '0.001', '100', '1', '~/repos/dmeyf/features-importantes-lgbm/features_minmax_historicos2meses.txt', '200', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/lgbm_basico.csv')
 
-if (  length(args) != 11) {
-  stop("Tienen que ser 11 parametros:
+if (  length(args) != 15) {
+  stop("Tienen que ser 15 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
   3: mes de evaluacion: 202001, 201911, ...
   4: numero de iteraciones: 100, 20, ...
   5: learning rate: 0.01, 0.001, 0.0005, ...
   6: hojas: 50, 100, ...
-  7: log: -1, 0, 1, 2, ...
-  8: path features importantes: '~/features_procesadas.txt'
-  9: top features importantes a usar: 10, 20, 100, ...
-  10: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
-  11: path de salida: '~/lgbm.csv'", call.=FALSE)
+  7: feature extraction: 0.01, 0.001, 0.0005, ...
+  8: main gain to split: 0.01, 0.001, 0.0005, ...
+  9: lambda1: 0.01, 0.001, 0.0005, ...
+  10: lambda2: 0.01, 0.001, 0.0005, ...
+  11: log: -1, 0, 1, 2, ...
+  12: path features importantes: '~/features_procesadas.txt'
+  13: top features importantes a usar: 10, 20, 100, ...
+  14: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
+  15: path de salida: '~/lgbm.csv'", call.=FALSE)
 }
 
 require(data.table)
@@ -34,11 +38,15 @@ foto_mes_evaluacion = as.integer(args[3])
 iteraciones = as.integer(args[4])
 learning_rate = as.double(args[5])
 hojas = as.integer(args[6])
-log = as.integer(args[7])
-path_features = args[8]
-top_features = as.integer(args[9])
-dataset_path = args[10]
-path_salida = args[11]
+feature_extraction = as.double(args[7])
+min_gain_to_split = as.double(args[8])
+lambda1 = as.double(args[9])
+lambda2 = as.double(args[10])
+log = as.integer(args[11])
+path_features = args[12]
+top_features = as.integer(args[13])
+dataset_path = args[14]
+path_salida = args[15]
 
 dataset = levantar_clientes(path = dataset_path)
 
@@ -63,11 +71,11 @@ modelo = lgb.train(data = entrenamiento, objective = 'binary',
                    num_iterations = iteraciones,
                    learning_rate = learning_rate,
                    # early_stopping_rounds = as.integer(50 + 5/learning_rate),
-                   feature_fraction = 0.2575957,
-                   min_gain_to_split = 0.01428075,
+                   feature_fraction = feature_extraction,
+                   min_gain_to_split = min_gain_to_split,
                    num_leaves = hojas,
-                   lambda_l1 = 3.758696,
-                   lambda_l2 = 0.341236,
+                   lambda_l1 = lambda1,
+                   lambda_l2 = lambda2,
                    verbose = log)
 
 prediccion = predict(modelo, data.matrix( dataset[foto_mes == foto_mes_evaluacion, ..features]))
