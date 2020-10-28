@@ -40,7 +40,7 @@ top_features = as.integer(args[9])
 dataset_path = args[10]
 path_salida = args[11]
 
-dataset = levantar_clientes(path = dataset_path, nombre_clase_binaria = 'baja', positivo = 1L, negativo = 0L)
+dataset = levantar_clientes(path = dataset_path)
 
 if (path_features != '-') {
   features = fread(path_features)

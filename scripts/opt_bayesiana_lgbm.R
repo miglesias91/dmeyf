@@ -122,7 +122,9 @@ ganancia_lgbm = function(x) {
 }
 
 # levanto dataset
-dataset = levantar_clientes(path = dataset_path, nombre_clase_binaria = 'baja', positivo = 1L, negativo = 0L)
+dataset = levantar_clientes(path = dataset_path)
+
+dataset[, baja := ifesle(baja == 'si', 1L, 0L)]
 
 if (path_features != '-') {
   features = fread(path_features)
