@@ -20,7 +20,7 @@ if (  length(args) != 11) {
   8: path features importantes: '~/features_procesadas.txt'
   9: top features importantes a usar: 10, 20, 100, ...
   10: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
-  11: path de salida: '~/ranger.csv'", call.=FALSE)
+  11: path de salida: '~/lgbm.csv'", call.=FALSE)
 }
 
 require(data.table)

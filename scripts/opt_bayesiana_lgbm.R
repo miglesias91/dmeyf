@@ -18,7 +18,7 @@ if (length(args) != 9) {
   5: path features importantes: '~/features_procesadas.txt'
   6: top features importantes a usar: 10, 20, 100, ...
   7: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
-  8: carpeta salida: '~/opt_bayesiana_ranger'
+  8: carpeta salida: '~/opt_bayesiana_lgbm'
   9: número de iteraciones: 100, 200, ...",
        call.=FALSE)
 }
