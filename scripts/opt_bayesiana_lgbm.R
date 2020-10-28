@@ -3,12 +3,6 @@
 # borro todo
 rm( list=ls() )
 
-require(data.table)
-require(lightgbm)
-require(rutiles)
-require(DiceKriging)
-require(mlrMBO)
-
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
@@ -28,6 +22,12 @@ if (length(args) != 9) {
   9: número de iteraciones: 100, 200, ...",
        call.=FALSE)
 }
+
+require(data.table)
+require(lightgbm)
+require(rutiles)
+require(DiceKriging)
+require(mlrMBO)
 
 foto_mes_entrenamiento_desde = as.integer(args[1])
 foto_mes_entrenamiento_hasta = as.integer(args[2])

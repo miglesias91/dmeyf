@@ -3,10 +3,6 @@
 # borro todo
 rm( list=ls() )
 
-require(data.table)
-require(rutiles)
-require(lightgbm)
-
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
@@ -26,6 +22,11 @@ if (  length(args) != 11) {
   10: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
   11: path de salida: '~/ranger.csv'", call.=FALSE)
 }
+
+require(data.table)
+require(rutiles)
+require(lightgbm)
+
 
 foto_mes_desde = as.integer(args[1])
 foto_mes_hasta = as.integer(args[2])
