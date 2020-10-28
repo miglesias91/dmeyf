@@ -13,7 +13,7 @@ args = commandArgs(trailingOnly=TRUE)
 # args = c('201906', '201911', '202001', '100', '0.001', '100', '1', '~/repos/dmeyf/features-importantes-lgbm/features_minmax_historicos2meses.txt', '200', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/lgbm_basico.csv')
 
 if (  length(args) != 11) {
-  stop("Tienen que ser 9 parametros:
+  stop("Tienen que ser 11 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
   3: mes de evaluacion: 202001, 201911, ...
