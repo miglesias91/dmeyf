@@ -12,7 +12,7 @@ require(mlrMBO)
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-args = c('201908', '201909', '201911', '201911', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/opt_bayesiana_ranger', 2)
+# args = c('201908', '201909', '201911', '201911', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/opt_bayesiana_ranger', 2)
 
 # test if there is at least one argument: if not, return an error
 if (length(args) != 9) {
