@@ -42,6 +42,8 @@ path_salida = args[11]
 
 dataset = levantar_clientes(path = dataset_path)
 
+dataset[, baja := ifelse(baja == 'si', 1L, 0L)]
+
 if (path_features != '-') {
   features = fread(path_features)
   features = names(features)[1:top_features]
