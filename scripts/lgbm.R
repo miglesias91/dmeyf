@@ -10,9 +10,9 @@ require(lightgbm)
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-# args = c('201906', '201911', '202001', '100', '0.001', '100', '1', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/lgbm_basico.csv')
+# args = c('201906', '201911', '202001', '100', '0.001', '100', '1', '~/repos/dmeyf/features-importantes-lgbm/features_minmax_historicos2meses.txt', '200', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/lgbm_basico.csv')
 
-if (  length(args) != 9) {
+if (  length(args) != 11) {
   stop("Tienen que ser 9 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
@@ -21,8 +21,10 @@ if (  length(args) != 9) {
   5: learning rate: 0.01, 0.001, 0.0005, ...
   6: hojas: 50, 100, ...
   7: log: -1, 0, 1, 2, ...
-  8: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
-  9: path de salida: '~/ranger.csv'", call.=FALSE)
+  8: path features importantes: '~/features_procesadas.txt'
+  9: top features importantes a usar: 10, 20, 100, ...
+  10: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
+  11: path de salida: '~/ranger.csv'", call.=FALSE)
 }
 
 foto_mes_desde = as.integer(args[1])
@@ -32,14 +34,21 @@ iteraciones = as.integer(args[4])
 learning_rate = as.double(args[5])
 hojas = as.integer(args[6])
 log = as.integer(args[7])
-dataset_path = args[8]
-path_salida = args[9]
+path_features = args[8]
+top_features = as.integer(args[9])
+dataset_path = args[10]
+path_salida = args[11]
 
 dataset = levantar_clientes(path = dataset_path, corregir_clase = F)
 
 dataset[, baja := ifelse(baja == 'si', 1L, 0L)]
 
-features = setdiff(names(dataset), c('numero_de_cliente', 'foto_mes', 'baja'))
+if (path_features != '-') {
+  features = fread(path_features)
+  features = names(features)[1:top_features]
+} else {
+  features = setdiff(names(dataset), c('numero_de_cliente', 'foto_mes', 'baja'))
+}
 
 dentrenamiento = dataset[foto_mes_desde <= foto_mes & foto_mes <= foto_mes_hasta]
 
