@@ -11,7 +11,7 @@ args = commandArgs(trailingOnly=TRUE)
 # PARA DEBUG
 # args = c('201908', '201909', '201911', '2', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/ranger_basico.csv')
 
-if (  length(args) != 6) {
+if (  length(args) != 4) {
   stop("Tienen que ser 4 parametros:
   1: mes desde: 202001, 201911, ...
   2: ventana historico: 0, 1, 2, 3 ... (0 = sin historico)
