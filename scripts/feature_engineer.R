@@ -3,13 +3,10 @@
 # borro todo
 rm( list=ls() )
 
-require(data.table)
-require(rutiles)
-
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-# args = c('201908', '201909', '201911', '2', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/ranger_basico.csv')
+# args = c('201907', '1', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/ranger_basico.csv')
 
 if (  length(args) != 4) {
   stop("Tienen que ser 4 parametros:
@@ -18,6 +15,9 @@ if (  length(args) != 4) {
   3: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
   4: path de salida: '~/feature_eng_paquete_premium_201906_202001.txt.gz'", call.=FALSE)
 }
+
+require(data.table)
+require(rutiles)
 
 foto_mes_desde = as.integer(args[1])
 ventana_historico = as.integer(args[2])
