@@ -26,7 +26,7 @@ path_salida = args[4]
 
 dataset = levantar_clientes(path = dataset_path)
 
-dataset = rutiles::feature_eng(dataset, historico_desde = foto_mes_desde, ventana_historico = ventana_historico)
+dataset = rutiles::feature_eng(dataset, historico_desde = foto_mes_desde, ventana_historico = ventana_historico, temp = path_salida)
 
 if (path_salida != '-'){
   fwrite(dataset, file = path_salida, sep = '\t')
