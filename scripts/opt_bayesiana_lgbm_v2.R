@@ -158,8 +158,8 @@ if (path_features != '-') {
   features = setdiff(names(dataset), c('numero_de_cliente', 'foto_mes', 'baja'))
 }
 
-entrenamiento = dataset[foto_mes_entrenamiento_desde <= foto_mes & foto_mes <= foto_mes_entrenamiento_hasta, ]
-evaluacion = dataset[foto_mes_evaluacion_desde <= foto_mes & foto_mes <= foto_mes_evaluacion_hasta, ]
+entrenamiento = dataset[foto_mes_entrenamiento_desde <= foto_mes & foto_mes <= foto_mes_entrenamiento_hasta & foto_mes != foto_mes_evaluacion, ]
+evaluacion = dataset[foto_mes == foto_mes_evaluacion, ]
 
 #Aqui comienza la configuracion de la Bayesian Optimization
 configureMlr(show.learner.output = FALSE)
