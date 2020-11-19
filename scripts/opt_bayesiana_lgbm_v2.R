@@ -219,14 +219,10 @@ if(!file.exists(rdata)) {
   run = mboContinue(rdata)
 }
 
-cat('holanda')
 # me quedo con el pnrounds de la mejor corrida
 tbl = as.data.table(run$opt.path)
-cat('holanda2')
 setorder(tbl, -y)
-cat('holanda3')
 mejor_pnrounds = tbl[1, pnum_iterations]
-cat('holanda4')
 
 jsonsalida = paste0(
   '{
