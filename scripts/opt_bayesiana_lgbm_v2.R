@@ -125,6 +125,7 @@ ganancia_lgbm = function(x) {
                      metric = 'custom',  # ATENCION   tremendamente importante
                      boost_from_average = TRUE,
                      num_iterations = 999999,  # un numero muy grande
+                     early_stopping_rounds= as.integer(50 + 5/x$plearning_rate),
                      min_data_in_leaf = x$pmin_data_in_leaf,
                      learning_rate = x$plearning_rate,
                      feature_fraction = x$pfeature_fraction,
