@@ -9,7 +9,7 @@ args = commandArgs(trailingOnly=TRUE)
 # args = c('201906', '201911', '202001', '100', '0.001', '100', '1', '~/repos/dmeyf/features-importantes-lgbm/features_minmax_historicos2meses.txt', '200', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/lgbm_basico.csv')
 
 if (  length(args) != 17) {
-  stop("Tienen que ser 15 parametros:
+  stop("Tienen que ser 17 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
   3: mes de evaluacion: 202001, 201911, ...
@@ -94,7 +94,7 @@ if (imprimir_importantes) {
 if (path_salida != '-') {
   rutiles::kaggle_csv(clientes = dataset[foto_mes == foto_mes_evaluacion, numero_de_cliente], estimulos = as.integer(prediccion > 0.025), path = path_salida)
   
-  data = data.table('numero_de_cliente' = clientes, 'prob' = prediccion)
+  data = data.table('numero_de_cliente' = dataset[foto_mes == foto_mes_evaluacion, numero_de_cliente], 'prob' = prediccion)
   fwrite(data, sep = ',',  file = paste0(path_salida,'.probs'))
 }
 

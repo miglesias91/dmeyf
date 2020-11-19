@@ -9,8 +9,8 @@ args = commandArgs(trailingOnly=TRUE)
 # args = c('201908', '201909', '201911', 'learning_rate=0.0005_0.005-num_leaves=500_800-feature_extraction=0.25_0.25', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/opt_bayesiana_ranger', 2)
 
 # test if there is at least one argument: if not, return an error
-if (length(args) != 9) {
-  stop("Tienen que ser 9 parametros:
+if (length(args) != 10) {
+  stop("Tienen que ser 10 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
   3: mes evaluacion
@@ -19,7 +19,8 @@ if (length(args) != 9) {
   6: top features importantes a usar: 10, 20, 100, ...
   7: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
   8: carpeta salida: '~/opt_bayesiana_lgbm'
-  9: número de iteraciones: 100, 200, ...",
+  9: número de iteraciones: 100, 200, ...
+  10: undersampling: 0.01, 0.1, 1.0, ...",
        call.=FALSE)
 }
 
@@ -63,6 +64,7 @@ top_features = as.integer(args[6])
 dataset_path = args[7]
 carpeta = args[8]
 n_iteraciones = as.numeric(args[9])
+porcion_undersampling = as.numeric(args[10])
 
 # pruebo numero de corrida hasta el llegar al ultimo numero de archivo de salida
 n_corrida = 1
@@ -78,10 +80,14 @@ salida = paste0(carpeta,"/", n_corrida, ".json" )
 # funcion objetivo
 #esta es la funcion de ganancia, que se busca optimizar
 #se usa internamente a LightGBM
+
+# uso este parametro global para comunicar la funcion de ganancia con el entrenamiento y poder optimizar la prob de corte.
+GLOBAL_prob_corte =  0.025
+
 fganancia_logistic_lightgbm = function(probs, data)  {
   vlabels = getinfo(data, 'label')
   
-  gan = sum((probs > 0.025) * ifelse(vlabels == 1, +29250, -750))
+  gan = sum((probs > GLOBAL_prob_corte) * ifelse(vlabels == 1, +29250, -750))
   
   return(list(name = 'ganancia',
               value =  ifelse(is.na(gan), 0, gan),
@@ -93,13 +99,15 @@ fganancia_logistic_lightgbm = function(probs, data)  {
 ganancia_lgbm = function(x) {
   gc()
   
-  # meses = c(201908, 201907, 201906, 201905, 201904, 201903, 201902, 201901, 201812, 201811, 201810,
-  # 201809, 201808, 201807, 201806, 201805, 201804, 201803, 201802, 201801, 201712, 201711, 201710, 201709)
-  # vmes_desde = meses[x$pmeses]
+  GLOBAL_prob_corte = x$pprob_corte
+  
+  # agrego la columna azar para hacer undersampling
+  dataset_train = dataset[, azar := runif(nrow(dataset)) ]
   
   # dejo los datos en el formato que necesita LightGBM
-  dBO_train = lgb.Dataset(data  = data.matrix(dataset[foto_mes_entrenamiento_desde <= foto_mes & foto_mes <= foto_mes_entrenamiento_hasta & foto_mes != foto_mes_evaluacion, ..features]),
-                          label = dataset[foto_mes_entrenamiento_desde <= foto_mes & foto_mes <= foto_mes_entrenamiento_hasta & foto_mes != foto_mes_evaluacion, baja],
+  dtrain = dataset[foto_mes_entrenamiento_desde <= foto_mes & foto_mes <= foto_mes_entrenamiento_hasta & foto_mes != foto_mes_evaluacion & (baja == 1L | azar <= porcion_undersampling)]
+  dBO_train = lgb.Dataset(data  = data.matrix(dtrain[, ..features]),
+                          label = dtrain[, baja],
                           free_raw_data=TRUE)
   
   dBO_test = lgb.Dataset(data  = data.matrix(dataset[foto_mes == foto_mes_evaluacion, ..features]),
@@ -141,6 +149,7 @@ ganancia_lgbm = function(x) {
       x$plearning_rate, '\t',
       x$plambda_l1, '\t',
       x$plambda_l2, '\t',
+      x$pprob_corte, '\t',
       ganancia, '\n')
   
   return(ganancia)
@@ -172,8 +181,8 @@ funcion_objetivo = makeSingleObjectiveFunction(
     makeNumericParam('pmin_gain_to_split',lower = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde'])   , upper = as.numeric(rangos_de_parametros[['min_gain_to_split']]['hasta'])),
     makeNumericParam('plearning_rate',    lower = as.numeric(rangos_de_parametros[['learning_rate']]['desde'])   , upper = as.numeric(rangos_de_parametros[['learning_rate']]['hasta'])),
     makeNumericParam('plambda_l1',        lower = as.numeric(rangos_de_parametros[['lambda_l1']]['desde'])   , upper = as.numeric(rangos_de_parametros[['lambda_l1']]['hasta'])),
-    makeNumericParam('plambda_l2',        lower = as.numeric(rangos_de_parametros[['lambda_l2']]['desde'])   , upper = as.numeric(rangos_de_parametros[['lambda_l2']]['hasta']))
-    # makeIntegerParam('pmeses',            lower = 1L, upper = 20L)
+    makeNumericParam('plambda_l2',        lower = as.numeric(rangos_de_parametros[['lambda_l2']]['desde'])   , upper = as.numeric(rangos_de_parametros[['lambda_l2']]['hasta'])),
+    makeNumericParam("pprob_corte",       lower=  0.015  , upper=  0.25)
   ),
   has.simple.signature = FALSE)
 
@@ -196,6 +205,7 @@ if(!file.exists(rdata)) {
       'plearning_rate', '\t',
       'plambda_l1', '\t',
       'plambda_l2', '\t',
+      'pprob_corte', '\t',
       'ganancia','\t', 'n_iteraciones: ', n_iteraciones, '\n')
   
   # INICIO EJECUCIÓN DESDE CERO
@@ -221,7 +231,8 @@ jsonsalida = paste0(
   "min_gain_to_split" : ', run$x$pmin_gain_to_split, ',
   "learning_rate" : ', run$x$plearning_rate, ',
   "lambda_l1" : ', run$x$plambda_l1, ',
-  "lambda_l2" : ', run$x$plambda_l2,
+  "lambda_l2" : ', run$x$plambda_l2, ',
+  "prob_corte" : ', run$x$pprob_corte,
   '
   }'
 )
