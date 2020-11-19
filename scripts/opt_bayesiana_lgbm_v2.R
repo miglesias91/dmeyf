@@ -6,7 +6,7 @@ rm( list=ls() )
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-# args = c('201908', '201909', '201911', 'learning_rate=0.0005_0.005-num_leaves=500_800-feature_extraction=0.25_0.25', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/opt_bayesiana_ranger', 2)
+args = c('201908', '201909', '201911', 'learning_rate=0.0005_0.005-num_leaves=500_800-feature_fraction=0.25_0.25-prob_corte=0.015_0.35', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/opt_bayesiana_ranger', 2, 0.05)
 
 # test if there is at least one argument: if not, return an error
 if (length(args) != 10) {
@@ -43,6 +43,7 @@ rangos_de_parametros[['feature_fraction']] = list('desde' = '1.0', 'hasta' = '1.
 rangos_de_parametros[['min_gain_to_split']] = list('desde' = '0', 'hasta' = '0')
 rangos_de_parametros[['lambda_l1']] = list('desde' = '0', 'hasta' = '0')
 rangos_de_parametros[['lambda_l2']] = list('desde' = '0', 'hasta' = '0')
+rangos_de_parametros[['prob_corte']] = list('desde' = '0.025', 'hasta' = '0.025')
 
 pars = strsplit(args[4], '-')[[1]]
 for (par in pars) {
@@ -182,7 +183,7 @@ funcion_objetivo = makeSingleObjectiveFunction(
     makeNumericParam('plearning_rate',    lower = as.numeric(rangos_de_parametros[['learning_rate']]['desde'])   , upper = as.numeric(rangos_de_parametros[['learning_rate']]['hasta'])),
     makeNumericParam('plambda_l1',        lower = as.numeric(rangos_de_parametros[['lambda_l1']]['desde'])   , upper = as.numeric(rangos_de_parametros[['lambda_l1']]['hasta'])),
     makeNumericParam('plambda_l2',        lower = as.numeric(rangos_de_parametros[['lambda_l2']]['desde'])   , upper = as.numeric(rangos_de_parametros[['lambda_l2']]['hasta'])),
-    makeNumericParam("pprob_corte",       lower=  0.015  , upper=  0.25)
+    makeNumericParam("pprob_corte",       lower = as.numeric(rangos_de_parametros[['prob_corte']]['desde'])   , upper = as.numeric(rangos_de_parametros[['prob_corte']]['hasta']))
   ),
   has.simple.signature = FALSE)
 
