@@ -6,11 +6,11 @@ rm( list=ls() )
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-# args = c('201908', '201909', '201911', 'learning_rate=0.0005_0.005-num_leaves=500_800-feature_fraction=0.25_0.25-prob_corte=0.015_0.35', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/opt_bayesiana_ranger', 2, 0.05)
+# args = c('201908', '201909', '201911', 'learning_rate=0.0005_0.005-num_leaves=500_800-feature_fraction=0.25_0.25-prob_corte=0.015_0.35', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/opt_bayesiana_ranger', 2, 0.05, 0.2)
 
 # test if there is at least one argument: if not, return an error
-if (length(args) != 10) {
-  stop("Tienen que ser 10 parametros:
+if (length(args) != 11) {
+  stop("Tienen que ser 11 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
   3: mes evaluacion
@@ -20,7 +20,8 @@ if (length(args) != 10) {
   7: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
   8: carpeta salida: '~/opt_bayesiana_lgbm'
   9: número de iteraciones: 100, 200, ...
-  10: undersampling: 0.01, 0.1, 1.0, ...",
+  10: undersampling: 0.01, 0.1, 1.0, ...
+  11: prob corte inicial: 0.025, 0.25, ...",
        call.=FALSE)
 }
 
@@ -66,6 +67,7 @@ dataset_path = args[7]
 carpeta = args[8]
 n_iteraciones = as.numeric(args[9])
 porcion_undersampling = as.numeric(args[10])
+prob_corte_inicial = as.numeric(args[11])
 
 # pruebo numero de corrida hasta el llegar al ultimo numero de archivo de salida
 n_corrida = 1
@@ -83,7 +85,7 @@ salida = paste0(carpeta,"/", n_corrida, ".json" )
 #se usa internamente a LightGBM
 
 # uso este parametro global para comunicar la funcion de ganancia con el entrenamiento y poder optimizar la prob de corte.
-GLOBAL_prob_corte =  0.025
+GLOBAL_prob_corte =  prob_corte_inicial
 
 fganancia_logistic_lightgbm = function(probs, data)  {
   vlabels = getinfo(data, 'label')
