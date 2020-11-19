@@ -105,7 +105,7 @@ ganancia_lgbm = function(x) {
   GLOBAL_prob_corte = x$pprob_corte
   
   # agrego la columna azar para hacer undersampling
-  dataset_train = dataset[, azar := runif(nrow(dataset)) ]
+  dataset[, azar := runif(nrow(dataset)) ]
   
   # dejo los datos en el formato que necesita LightGBM
   dtrain = dataset[foto_mes_entrenamiento_desde <= foto_mes & foto_mes <= foto_mes_entrenamiento_hasta & foto_mes != foto_mes_evaluacion & (baja == 1L | azar <= porcion_undersampling)]
