@@ -1,3 +1,9 @@
 # optimizacion bayesiana: meses de entrenamiento + mes de evaluacion + rangos de busqueda de hiperparametros + seleccion de variables importantes (lista y top) + dataset + carpeta de salida + numero de iteraciones + porcion de undersampling de la clase negativa + valor inicial de probabilidad de corte
 
 nohup Rscript --vanilla ~/repos/dmeyf/scripts/opt_bayesiana_lgbm_v2.R 201706 202003 201905 min_data_in_leaf=100_500000-feature_fraction=0.25_0.25-learning_rate=0.02_0.02-prob_corte=0.015_0.35 ~/repos/dmeyf/features-importantes-lgbm/features_minmax_historicos6meses_paquete_final.txt 200 ~/buckets/b1/datasets/MinMaxTarjetas_Historico6MesesDesde202005_paquete_final.txt.gz ~/buckets/b2/opt_bayesiana_lgbm_6meses_20201118 10 0.05 0.2 > ~/corrida_ob_6meses_10iters_5sobre100undersam.txt &
+
+
+# lgbm: meses de entrenamiento + mes de evaluacion + numero de iteraciones + learning rate + min data in leaf + num leaves + feature fraction + min data to split + lambda1 + lambda2 + prob de corte + log + seleccion de variables importantes (lista y top) + dataset + csv de salida + imprimir variables importantes
+
+nohup Rscript --vanilla ~/repos/dmeyf/scripts/lgbm.R 201706 202003 202005 1500 0.02 6840 500 0.25 0 0 0 0.187798 2 ~/repos/dmeyf/features-importantes-lgbm/features_minmax_historicos6meses_paquete_final.t
+xt 200 ~/buckets/b1/datasets/MinMaxTarjetas_Historico6MesesDesde202005_paquete_final.txt.gz ~/buckets/b2/lgbm_con_prob_y_mindatainleaf.csv F > corrida_lgbm.txt &
