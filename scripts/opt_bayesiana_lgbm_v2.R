@@ -6,7 +6,7 @@ rm( list=ls() )
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-args = c('201908', '201909', '201911', 'learning_rate=0.0005_0.005-num_leaves=500_800-feature_fraction=0.25_0.25-prob_corte=0.015_0.35', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/opt_bayesiana_ranger', 2, 0.05)
+# args = c('201908', '201909', '201911', 'learning_rate=0.0005_0.005-num_leaves=500_800-feature_fraction=0.25_0.25-prob_corte=0.015_0.35', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/opt_bayesiana_ranger', 2, 0.05)
 
 # test if there is at least one argument: if not, return an error
 if (length(args) != 10) {
