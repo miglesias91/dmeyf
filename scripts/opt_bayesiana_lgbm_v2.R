@@ -280,7 +280,7 @@ funcion_objetivo = makeSingleObjectiveFunction(
   # ),
   has.simple.signature = FALSE)
 
-control = makeMBOControl(save.on.disk.at.time = Inf,  save.file.path = rdata)
+control = makeMBOControl(save.on.disk.at.time = 600,  save.file.path = rdata)
 control = setMBOControlTermination(control, iters = n_iteraciones)
 control = setMBOControlInfill(control, crit = makeMBOInfillCritEI())
 
