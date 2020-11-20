@@ -103,10 +103,12 @@ fganancia_logistic_lightgbm = function(probs, data)  {
 ganancia_lgbm = function(x) {
   gc()
   
+  pfeature_pre_filter = T
   if (as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde']) == as.integer(rangos_de_parametros[['min_data_in_leaf']]['hasta'])) {
     pmin_data_in_leaf = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])
   } else {
     pmin_data_in_leaf = x$pmin_data_in_leaf
+    pfeature_pre_filter = F
   }
   
   if (as.integer(rangos_de_parametros[['num_leaves']]['desde']) == as.integer(rangos_de_parametros[['num_leaves']]['hasta'])) {
@@ -162,6 +164,7 @@ ganancia_lgbm = function(x) {
                      boost_from_average = TRUE,
                      num_iterations = 999999,  # un numero muy grande
                      early_stopping_rounds= as.integer(50 + 5/plearning_rate),
+                     feature_pre_filter = pfeature_pre_filter,
                      min_data_in_leaf = pmin_data_in_leaf,
                      learning_rate = plearning_rate,
                      feature_fraction = pfeature_fraction,
