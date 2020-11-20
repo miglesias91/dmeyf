@@ -71,7 +71,7 @@ prob_corte_inicial = as.numeric(args[11])
 
 # pruebo numero de corrida hasta el llegar al ultimo numero de archivo de salida
 n_corrida = 1
-while(file.exists(paste0(carpeta,"/", n_corrida, ".json"))) {
+while(file.exists(paste0(carpeta,"/", n_corrida, ".log"))) {
   n_corrida = n_corrida + 1
 }
 
