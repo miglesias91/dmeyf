@@ -103,50 +103,50 @@ fganancia_logistic_lightgbm = function(probs, data)  {
 ganancia_lgbm = function(x) {
   gc()
   
-  if (rangos_de_parametros[['min_data_in_leaf']]['desde'] == rangos_de_parametros[['min_data_in_leaf']]['hasta']) {
-    pmin_data_in_leaf = rangos_de_parametros[['min_data_in_leaf']]['desde']
+  if (as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde']) == as.integer(rangos_de_parametros[['min_data_in_leaf']]['hasta'])) {
+    pmin_data_in_leaf = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])
   } else {
     pmin_data_in_leaf = x$pmin_data_in_leaf
   }
   
-  if (rangos_de_parametros[['num_leaves']]['desde'] == rangos_de_parametros[['num_leaves']]['hasta']) {
-    pnum_leaves = rangos_de_parametros[['num_leaves']]['desde']
+  if (as.integer(rangos_de_parametros[['num_leaves']]['desde']) == as.integer(rangos_de_parametros[['num_leaves']]['hasta'])) {
+    pnum_leaves = as.integer(rangos_de_parametros[['num_leaves']]['desde'])
   } else {
     pnum_leaves = x$pnum_leaves
   }
   
-  if (rangos_de_parametros[['feature_fraction']]['desde'] == rangos_de_parametros[['feature_fraction']]['hasta']) {
-    pfeature_fraction = rangos_de_parametros[['feature_fraction']]['desde']
+  if (as.numeric(rangos_de_parametros[['feature_fraction']]['desde']) == as.numeric(rangos_de_parametros[['feature_fraction']]['hasta'])) {
+    pfeature_fraction = as.numeric(rangos_de_parametros[['feature_fraction']]['desde'])
   } else {
     pfeature_fraction = x$pfeature_fraction
   }
   
-  if (rangos_de_parametros[['min_gain_to_split']]['desde'] == rangos_de_parametros[['min_gain_to_split']]['hasta']) {
-    pmin_gain_to_split = rangos_de_parametros[['min_gain_to_split']]['desde']
+  if (as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde']) == as.numeric(rangos_de_parametros[['min_gain_to_split']]['hasta'])) {
+    pmin_gain_to_split = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde'])
   } else {
     pmin_gain_to_split = x$pmin_gain_to_split
   }
   
-  if (rangos_de_parametros[['learning_rate']]['desde'] == rangos_de_parametros[['learning_rate']]['hasta']) {
-    plearning_rate = rangos_de_parametros[['learning_rate']]['desde']
+  if (as.numeric(rangos_de_parametros[['learning_rate']]['desde']) == as.numeric(rangos_de_parametros[['learning_rate']]['hasta'])) {
+    plearning_rate = as.numeric(rangos_de_parametros[['learning_rate']]['desde'])
   } else {
     plearning_rate = x$plearning_rate
   }
   
-  if (rangos_de_parametros[['lambda_l1']]['desde'] == rangos_de_parametros[['lambda_l1']]['hasta']) {
-    plambda_l1 = rangos_de_parametros[['lambda_l1']]['desde']
+  if (as.numeric(rangos_de_parametros[['lambda_l1']]['desde']) == as.numeric(rangos_de_parametros[['lambda_l1']]['hasta'])) {
+    plambda_l1 = as.numeric(rangos_de_parametros[['lambda_l1']]['desde'])
   } else {
     plambda_l1 = x$plambda_l1
   }
   
-  if (rangos_de_parametros[['lambda_l2']]['desde'] == rangos_de_parametros[['lambda_l2']]['hasta']) {
-    plambda_l2 = rangos_de_parametros[['lambda_l2']]['desde']
+  if (as.numeric(rangos_de_parametros[['lambda_l2']]['desde']) == as.numeric(rangos_de_parametros[['lambda_l2']]['hasta'])) {
+    plambda_l2 = as.numeric(rangos_de_parametros[['lambda_l2']]['desde'])
   } else {
     plambda_l2 = x$plambda_l2
   }
   
-  if (rangos_de_parametros[['prob_corte']]['desde'] == rangos_de_parametros[['prob_corte']]['hasta']) {
-    pprob_corte = rangos_de_parametros[['prob_corte']]['desde']
+  if (as.numeric(rangos_de_parametros[['prob_corte']]['desde']) == as.numeric(rangos_de_parametros[['prob_corte']]['hasta'])) {
+    pprob_corte = as.numeric(rangos_de_parametros[['prob_corte']]['desde'])
   } else {
     pprob_corte = x$pprob_corte
   }
@@ -228,35 +228,35 @@ gc()
 configureMlr(show.learner.output = FALSE)
 
 params = list()
-if (rangos_de_parametros[['min_data_in_leaf']]['desde'] != rangos_de_parametros[['min_data_in_leaf']]['hasta']) {
+if (as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde']) != as.integer(rangos_de_parametros[['min_data_in_leaf']]['hasta'])) {
   params = c(params, makeIntegerParam('pmin_data_in_leaf', lower = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])   , upper = as.integer(rangos_de_parametros[['min_data_in_leaf']]['hasta'])))
 }
 
-if (rangos_de_parametros[['num_leaves']]['desde'] != rangos_de_parametros[['num_leaves']]['hasta']) {
+if (as.integer(rangos_de_parametros[['num_leaves']]['desde']) != as.integer(rangos_de_parametros[['num_leaves']]['hasta'])) {
   params = c(params, makeIntegerParam('pnum_leaves', lower = as.integer(rangos_de_parametros[['num_leaves']]['desde']), upper = as.integer(rangos_de_parametros[['num_leaves']]['hasta'])))
 }
 
-if (rangos_de_parametros[['feature_fraction']]['desde'] != rangos_de_parametros[['feature_fraction']]['hasta']) {
+if (as.numeric(rangos_de_parametros[['feature_fraction']]['desde']) != as.numeric(rangos_de_parametros[['feature_fraction']]['hasta'])) {
   params = c(params, makeNumericParam('pfeature_fraction', lower = as.numeric(rangos_de_parametros[['feature_fraction']]['desde']), upper = as.numeric(rangos_de_parametros[['feature_fraction']]['hasta'])))
 }
 
-if (rangos_de_parametros[['min_gain_to_split']]['desde'] != rangos_de_parametros[['min_gain_to_split']]['hasta']) {
+if (as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde']) != as.numeric(rangos_de_parametros[['min_gain_to_split']]['hasta'])) {
   params = c(params, makeNumericParam('pmin_gain_to_split', lower = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde']), upper = as.numeric(rangos_de_parametros[['min_gain_to_split']]['hasta'])))
 }
 
-if (rangos_de_parametros[['learning_rate']]['desde'] != rangos_de_parametros[['learning_rate']]['hasta']) {
+if (as.numeric(rangos_de_parametros[['learning_rate']]['desde']) != as.numeric(rangos_de_parametros[['learning_rate']]['hasta'])) {
   params = c(params, makeNumericParam('plearning_rate', lower = as.numeric(rangos_de_parametros[['learning_rate']]['desde']), upper = as.numeric(rangos_de_parametros[['learning_rate']]['hasta'])))
 }
 
-if (rangos_de_parametros[['lambda_l1']]['desde'] != rangos_de_parametros[['lambda_l1']]['hasta']) {
+if (as.numeric(rangos_de_parametros[['lambda_l1']]['desde']) != as.numeric(rangos_de_parametros[['lambda_l1']]['hasta'])) {
   params = c(params, makeNumericParam('plambda_l1', lower = as.numeric(rangos_de_parametros[['lambda_l1']]['desde']), upper = as.numeric(rangos_de_parametros[['lambda_l1']]['hasta'])))
 }
 
-if (rangos_de_parametros[['lambda_l2']]['desde'] != rangos_de_parametros[['lambda_l2']]['hasta']) {
+if (as.numeric(rangos_de_parametros[['lambda_l2']]['desde']) != as.numeric(rangos_de_parametros[['lambda_l2']]['hasta'])) {
   params = c(params, makeNumericParam('plambda_l2', lower = as.numeric(rangos_de_parametros[['lambda_l2']]['desde']), upper = as.numeric(rangos_de_parametros[['lambda_l2']]['hasta'])))
 }
 
-if (rangos_de_parametros[['prob_corte']]['desde'] != rangos_de_parametros[['prob_corte']]['hasta']) {
+if (as.numeric(rangos_de_parametros[['prob_corte']]['desde']) != as.numeric(rangos_de_parametros[['prob_corte']]['hasta'])) {
   params = c(params, makeNumericParam("pprob_corte", lower = as.numeric(rangos_de_parametros[['prob_corte']]['desde']), upper = as.numeric(rangos_de_parametros[['prob_corte']]['hasta'])))
 }
 
