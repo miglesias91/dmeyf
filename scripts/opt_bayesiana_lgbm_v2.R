@@ -229,35 +229,35 @@ configureMlr(show.learner.output = FALSE)
 
 params = list()
 if (as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde']) != as.integer(rangos_de_parametros[['min_data_in_leaf']]['hasta'])) {
-  params = c(params, makeIntegerParam('pmin_data_in_leaf', lower = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])   , upper = as.integer(rangos_de_parametros[['min_data_in_leaf']]['hasta'])))
+  params[['pmin_data_in_leaf']] = makeIntegerParam('pmin_data_in_leaf', lower = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])   , upper = as.integer(rangos_de_parametros[['min_data_in_leaf']]['hasta']))
 }
 
 if (as.integer(rangos_de_parametros[['num_leaves']]['desde']) != as.integer(rangos_de_parametros[['num_leaves']]['hasta'])) {
-  params = c(params, makeIntegerParam('pnum_leaves', lower = as.integer(rangos_de_parametros[['num_leaves']]['desde']), upper = as.integer(rangos_de_parametros[['num_leaves']]['hasta'])))
+  params[['pnum_leaves']] = makeIntegerParam('pnum_leaves', lower = as.integer(rangos_de_parametros[['num_leaves']]['desde']), upper = as.integer(rangos_de_parametros[['num_leaves']]['hasta']))
 }
 
 if (as.numeric(rangos_de_parametros[['feature_fraction']]['desde']) != as.numeric(rangos_de_parametros[['feature_fraction']]['hasta'])) {
-  params = c(params, makeNumericParam('pfeature_fraction', lower = as.numeric(rangos_de_parametros[['feature_fraction']]['desde']), upper = as.numeric(rangos_de_parametros[['feature_fraction']]['hasta'])))
+  params[['pfeature_fraction']] = makeNumericParam('pfeature_fraction', lower = as.numeric(rangos_de_parametros[['feature_fraction']]['desde']), upper = as.numeric(rangos_de_parametros[['feature_fraction']]['hasta']))
 }
 
 if (as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde']) != as.numeric(rangos_de_parametros[['min_gain_to_split']]['hasta'])) {
-  params = c(params, makeNumericParam('pmin_gain_to_split', lower = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde']), upper = as.numeric(rangos_de_parametros[['min_gain_to_split']]['hasta'])))
+  params[['pmin_gain_to_split']] = makeNumericParam('pmin_gain_to_split', lower = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde']), upper = as.numeric(rangos_de_parametros[['min_gain_to_split']]['hasta']))
 }
 
 if (as.numeric(rangos_de_parametros[['learning_rate']]['desde']) != as.numeric(rangos_de_parametros[['learning_rate']]['hasta'])) {
-  params = c(params, makeNumericParam('plearning_rate', lower = as.numeric(rangos_de_parametros[['learning_rate']]['desde']), upper = as.numeric(rangos_de_parametros[['learning_rate']]['hasta'])))
+  params[['plearning_rate']] = makeNumericParam('plearning_rate', lower = as.numeric(rangos_de_parametros[['learning_rate']]['desde']), upper = as.numeric(rangos_de_parametros[['learning_rate']]['hasta']))
 }
 
 if (as.numeric(rangos_de_parametros[['lambda_l1']]['desde']) != as.numeric(rangos_de_parametros[['lambda_l1']]['hasta'])) {
-  params = c(params, makeNumericParam('plambda_l1', lower = as.numeric(rangos_de_parametros[['lambda_l1']]['desde']), upper = as.numeric(rangos_de_parametros[['lambda_l1']]['hasta'])))
+  params[['plambda_l1']] =makeNumericParam('plambda_l1', lower = as.numeric(rangos_de_parametros[['lambda_l1']]['desde']), upper = as.numeric(rangos_de_parametros[['lambda_l1']]['hasta']))
 }
 
 if (as.numeric(rangos_de_parametros[['lambda_l2']]['desde']) != as.numeric(rangos_de_parametros[['lambda_l2']]['hasta'])) {
-  params = c(params, makeNumericParam('plambda_l2', lower = as.numeric(rangos_de_parametros[['lambda_l2']]['desde']), upper = as.numeric(rangos_de_parametros[['lambda_l2']]['hasta'])))
+  params[['plambda_l2']] = makeNumericParam('plambda_l2', lower = as.numeric(rangos_de_parametros[['lambda_l2']]['desde']), upper = as.numeric(rangos_de_parametros[['lambda_l2']]['hasta']))
 }
 
 if (as.numeric(rangos_de_parametros[['prob_corte']]['desde']) != as.numeric(rangos_de_parametros[['prob_corte']]['hasta'])) {
-  params = c(params, makeNumericParam("pprob_corte", lower = as.numeric(rangos_de_parametros[['prob_corte']]['desde']), upper = as.numeric(rangos_de_parametros[['prob_corte']]['hasta'])))
+  params[['pprob_corte']] =makeNumericParam("pprob_corte", lower = as.numeric(rangos_de_parametros[['prob_corte']]['desde']), upper = as.numeric(rangos_de_parametros[['prob_corte']]['hasta']))
 }
 
 funcion_objetivo = makeSingleObjectiveFunction(
