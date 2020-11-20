@@ -6,7 +6,7 @@ rm( list=ls() )
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-# args = c('201908', '201909', '201911', 'learning_rate=0.0005_0.005-num_leaves=500_800-feature_fraction=0.25_0.25-prob_corte=0.015_0.35', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/opt_bayesiana_ranger', 2, 0.05, 0.2)
+# args = c('201908', '201909', '201911', 'min_data_in_leaf=100_1000', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/opt_bayesiana_ranger', 2, 0.05, 0.2)
 
 # test if there is at least one argument: if not, return an error
 if (length(args) != 11) {
@@ -102,20 +102,55 @@ fganancia_logistic_lightgbm = function(probs, data)  {
 ganancia_lgbm = function(x) {
   gc()
   
-  GLOBAL_prob_corte = x$pprob_corte
+  if (rangos_de_parametros[['min_data_in_leaf']]['desde'] == rangos_de_parametros[['min_data_in_leaf']]['hasta']) {
+    pmin_data_in_leaf = rangos_de_parametros[['min_data_in_leaf']]['desde']
+  } else {
+    pmin_data_in_leaf = x$pmin_data_in_leaf
+  }
   
-  # agrego la columna azar para hacer undersampling
-  dataset[, azar := runif(nrow(dataset)) ]
+  if (rangos_de_parametros[['num_leaves']]['desde'] == rangos_de_parametros[['num_leaves']]['hasta']) {
+    pnum_leaves = rangos_de_parametros[['num_leaves']]['desde']
+  } else {
+    pnum_leaves = x$pnum_leaves
+  }
   
-  # dejo los datos en el formato que necesita LightGBM
-  dtrain = dataset[foto_mes_entrenamiento_desde <= foto_mes & foto_mes <= foto_mes_entrenamiento_hasta & foto_mes != foto_mes_evaluacion & (baja == 1L | azar <= porcion_undersampling)]
-  dBO_train = lgb.Dataset(data  = data.matrix(dtrain[, ..features]),
-                          label = dtrain[, baja],
-                          free_raw_data=TRUE)
+  if (rangos_de_parametros[['feature_fraction']]['desde'] == rangos_de_parametros[['feature_fraction']]['hasta']) {
+    pfeature_fraction = rangos_de_parametros[['feature_fraction']]['desde']
+  } else {
+    pfeature_fraction = x$pfeature_fraction
+  }
   
-  dBO_test = lgb.Dataset(data  = data.matrix(dataset[foto_mes == foto_mes_evaluacion, ..features]),
-                         label = dataset[foto_mes == foto_mes_evaluacion, baja],
-                         free_raw_data=TRUE)
+  if (rangos_de_parametros[['min_gain_to_split']]['desde'] == rangos_de_parametros[['min_gain_to_split']]['hasta']) {
+    pmin_gain_to_split = rangos_de_parametros[['min_gain_to_split']]['desde']
+  } else {
+    pmin_gain_to_split = x$pmin_gain_to_split
+  }
+  
+  if (rangos_de_parametros[['learning_rate']]['desde'] == rangos_de_parametros[['learning_rate']]['hasta']) {
+    plearning_rate = rangos_de_parametros[['learning_rate']]['desde']
+  } else {
+    plearning_rate = x$plearning_rate
+  }
+  
+  if (rangos_de_parametros[['lambda_l1']]['desde'] == rangos_de_parametros[['lambda_l1']]['hasta']) {
+    plambda_l1 = rangos_de_parametros[['lambda_l1']]['desde']
+  } else {
+    plambda_l1 = x$plambda_l1
+  }
+  
+  if (rangos_de_parametros[['lambda_l2']]['desde'] == rangos_de_parametros[['lambda_l2']]['hasta']) {
+    plambda_l2 = rangos_de_parametros[['lambda_l2']]['desde']
+  } else {
+    plambda_l2 = x$plambda_l2
+  }
+  
+  if (rangos_de_parametros[['prob_corte']]['desde'] == rangos_de_parametros[['prob_corte']]['hasta']) {
+    pprob_corte = rangos_de_parametros[['prob_corte']]['desde']
+  } else {
+    pprob_corte = x$pprob_corte
+  }
+  
+  GLOBAL_prob_corte = pprob_corte
   
   set.seed(102191) # para que siempre me de el mismo resultado
   modelo = lgb.train(data = dBO_train,
@@ -125,14 +160,14 @@ ganancia_lgbm = function(x) {
                      metric = 'custom',  # ATENCION   tremendamente importante
                      boost_from_average = TRUE,
                      num_iterations = 999999,  # un numero muy grande
-                     early_stopping_rounds= as.integer(50 + 5/x$plearning_rate),
-                     min_data_in_leaf = x$pmin_data_in_leaf,
-                     learning_rate = x$plearning_rate,
-                     feature_fraction = x$pfeature_fraction,
-                     min_gain_to_split = x$pmin_gain_to_split,
-                     num_leaves = x$pnum_leaves,
-                     lambda_l1 = x$plambda_l1,
-                     lambda_l2 = x$plambda_l2,
+                     early_stopping_rounds= as.integer(50 + 5/plearning_rate),
+                     min_data_in_leaf = pmin_data_in_leaf,
+                     learning_rate = plearning_rate,
+                     feature_fraction = pfeature_fraction,
+                     min_gain_to_split = pmin_gain_to_split,
+                     num_leaves = pnum_leaves,
+                     lambda_l1 = plambda_l1,
+                     lambda_l2 = plambda_l2,
                      max_bin = 31,
                      verbosity = -1)
   
@@ -146,14 +181,14 @@ ganancia_lgbm = function(x) {
   #imprimo los resultados al archivo klog
   cat(file = log, append = TRUE, sep = '',
       format(Sys.time(), '%Y%m%d_%H%M%S'), '\t',
-      x$pmin_data_in_leaf, '\t',
-      x$pnum_leaves, '\t',
-      x$pfeature_fraction, '\t',
-      x$pmin_gain_to_split, '\t',
-      x$plearning_rate, '\t',
-      x$plambda_l1, '\t',
-      x$plambda_l2, '\t',
-      x$pprob_corte, '\t',
+      pmin_data_in_leaf, '\t',
+      pnum_leaves, '\t',
+      pfeature_fraction, '\t',
+      pmin_gain_to_split, '\t',
+      plearning_rate, '\t',
+      plambda_l1, '\t',
+      plambda_l2, '\t',
+      pprob_corte, '\t',
       ganancia, '\n')
   
   return(ganancia)
@@ -171,23 +206,74 @@ if (path_features != '-') {
   features = setdiff(names(dataset), c('numero_de_cliente', 'foto_mes', 'baja'))
 }
 
+# agrego la columna azar para hacer undersampling
+dataset[, azar := runif(nrow(dataset)) ]
+
+# dejo los datos en el formato que necesita LightGBM
+dtrain = dataset[foto_mes_entrenamiento_desde <= foto_mes & foto_mes <= foto_mes_entrenamiento_hasta & foto_mes != foto_mes_evaluacion & (baja == 1L | azar <= porcion_undersampling)]
+dBO_train = lgb.Dataset(data  = data.matrix(dtrain[, ..features]),
+                        label = dtrain[, baja],
+                        free_raw_data=TRUE)
+
+dBO_test = lgb.Dataset(data  = data.matrix(dataset[foto_mes == foto_mes_evaluacion, ..features]),
+                       label = dataset[foto_mes == foto_mes_evaluacion, baja],
+                       free_raw_data=TRUE)
+
+#ahora ya puedo borrar el dataset porque puse free_raw_data=TRUE
+rm(dataset)
+gc()
+
 #Aqui comienza la configuracion de la Bayesian Optimization
 configureMlr(show.learner.output = FALSE)
+
+params = list()
+if (rangos_de_parametros[['min_data_in_leaf']]['desde'] != rangos_de_parametros[['min_data_in_leaf']]['hasta']) {
+  params = c(params, makeIntegerParam('pmin_data_in_leaf', lower = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])   , upper = as.integer(rangos_de_parametros[['min_data_in_leaf']]['hasta'])))
+}
+
+if (rangos_de_parametros[['num_leaves']]['desde'] != rangos_de_parametros[['num_leaves']]['hasta']) {
+  params = c(params, makeIntegerParam('pnum_leaves', lower = as.integer(rangos_de_parametros[['num_leaves']]['desde']), upper = as.integer(rangos_de_parametros[['num_leaves']]['hasta'])))
+}
+
+if (rangos_de_parametros[['feature_fraction']]['desde'] != rangos_de_parametros[['feature_fraction']]['hasta']) {
+  params = c(params, makeNumericParam('pfeature_fraction', lower = as.numeric(rangos_de_parametros[['feature_fraction']]['desde']), upper = as.numeric(rangos_de_parametros[['feature_fraction']]['hasta'])))
+}
+
+if (rangos_de_parametros[['min_gain_to_split']]['desde'] != rangos_de_parametros[['min_gain_to_split']]['hasta']) {
+  params = c(params, makeNumericParam('pmin_gain_to_split', lower = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde']), upper = as.numeric(rangos_de_parametros[['min_gain_to_split']]['hasta'])))
+}
+
+if (rangos_de_parametros[['learning_rate']]['desde'] != rangos_de_parametros[['learning_rate']]['hasta']) {
+  params = c(params, makeNumericParam('plearning_rate', lower = as.numeric(rangos_de_parametros[['learning_rate']]['desde']), upper = as.numeric(rangos_de_parametros[['learning_rate']]['hasta'])))
+}
+
+if (rangos_de_parametros[['lambda_l1']]['desde'] != rangos_de_parametros[['lambda_l1']]['hasta']) {
+  params = c(params, makeNumericParam('plambda_l1', lower = as.numeric(rangos_de_parametros[['lambda_l1']]['desde']), upper = as.numeric(rangos_de_parametros[['lambda_l1']]['hasta'])))
+}
+
+if (rangos_de_parametros[['lambda_l2']]['desde'] != rangos_de_parametros[['lambda_l2']]['hasta']) {
+  params = c(params, makeNumericParam('plambda_l2', lower = as.numeric(rangos_de_parametros[['lambda_l2']]['desde']), upper = as.numeric(rangos_de_parametros[['lambda_l2']]['hasta'])))
+}
+
+if (rangos_de_parametros[['prob_corte']]['desde'] != rangos_de_parametros[['prob_corte']]['hasta']) {
+  params = c(params, makeNumericParam("pprob_corte", lower = as.numeric(rangos_de_parametros[['prob_corte']]['desde']), upper = as.numeric(rangos_de_parametros[['prob_corte']]['hasta'])))
+}
 
 funcion_objetivo = makeSingleObjectiveFunction(
   fn = ganancia_lgbm,
   minimize = FALSE,   #estoy Maximizando la ganancia
   noisy = TRUE,
-  par.set = makeParamSet(
-    makeIntegerParam('pmin_data_in_leaf', lower = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])   , upper = as.integer(rangos_de_parametros[['min_data_in_leaf']]['hasta'])),
-    makeIntegerParam('pnum_leaves',       lower = as.integer(rangos_de_parametros[['num_leaves']]['desde'])   , upper = as.integer(rangos_de_parametros[['num_leaves']]['hasta'])),
-    makeNumericParam('pfeature_fraction', lower = as.numeric(rangos_de_parametros[['feature_fraction']]['desde'])   , upper = as.numeric(rangos_de_parametros[['feature_fraction']]['hasta'])),
-    makeNumericParam('pmin_gain_to_split',lower = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde'])   , upper = as.numeric(rangos_de_parametros[['min_gain_to_split']]['hasta'])),
-    makeNumericParam('plearning_rate',    lower = as.numeric(rangos_de_parametros[['learning_rate']]['desde'])   , upper = as.numeric(rangos_de_parametros[['learning_rate']]['hasta'])),
-    makeNumericParam('plambda_l1',        lower = as.numeric(rangos_de_parametros[['lambda_l1']]['desde'])   , upper = as.numeric(rangos_de_parametros[['lambda_l1']]['hasta'])),
-    makeNumericParam('plambda_l2',        lower = as.numeric(rangos_de_parametros[['lambda_l2']]['desde'])   , upper = as.numeric(rangos_de_parametros[['lambda_l2']]['hasta'])),
-    makeNumericParam("pprob_corte",       lower = as.numeric(rangos_de_parametros[['prob_corte']]['desde'])   , upper = as.numeric(rangos_de_parametros[['prob_corte']]['hasta']))
-  ),
+  par.set = makeParamSet(params = params),
+  # par.set = makeParamSet(
+  #   makeIntegerParam('pmin_data_in_leaf', lower = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])   , upper = as.integer(rangos_de_parametros[['min_data_in_leaf']]['hasta'])),
+  #   makeIntegerParam('pnum_leaves',       lower = as.integer(rangos_de_parametros[['num_leaves']]['desde'])   , upper = as.integer(rangos_de_parametros[['num_leaves']]['hasta'])),
+  #   makeNumericParam('pfeature_fraction', lower = as.numeric(rangos_de_parametros[['feature_fraction']]['desde'])   , upper = as.numeric(rangos_de_parametros[['feature_fraction']]['hasta'])),
+  #   makeNumericParam('pmin_gain_to_split',lower = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde'])   , upper = as.numeric(rangos_de_parametros[['min_gain_to_split']]['hasta'])),
+  #   makeNumericParam('plearning_rate',    lower = as.numeric(rangos_de_parametros[['learning_rate']]['desde'])   , upper = as.numeric(rangos_de_parametros[['learning_rate']]['hasta'])),
+  #   makeNumericParam('plambda_l1',        lower = as.numeric(rangos_de_parametros[['lambda_l1']]['desde'])   , upper = as.numeric(rangos_de_parametros[['lambda_l1']]['hasta'])),
+  #   makeNumericParam('plambda_l2',        lower = as.numeric(rangos_de_parametros[['lambda_l2']]['desde'])   , upper = as.numeric(rangos_de_parametros[['lambda_l2']]['hasta'])),
+  #   makeNumericParam("pprob_corte",       lower = as.numeric(rangos_de_parametros[['prob_corte']]['desde'])   , upper = as.numeric(rangos_de_parametros[['prob_corte']]['hasta']))
+  # ),
   has.simple.signature = FALSE)
 
 control = makeMBOControl(save.on.disk.at.time = Inf,  save.file.path = rdata)
