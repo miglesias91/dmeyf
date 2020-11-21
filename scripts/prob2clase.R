@@ -17,9 +17,9 @@ if (length(args) != 2) {
 library(data.table)
 library(rutiles)
 
-path_prob = args[1]
-prob_de_corte = as.numeric(args[2])
-path_salida = paste0(path_prob,'.', args[2], '.csv')
+prob_de_corte = args[1]
+path_prob = as.numeric(args[2])
+path_salida = paste0(path_prob,'.', args[1], '.csv')
 
 probs = fread(path_prob, sep = ',')
 
