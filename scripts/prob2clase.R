@@ -6,7 +6,7 @@ rm( list=ls() )
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-# args = c('0.025', '~/repos/dmeyf/path.probs')
+# args = c('0.025', '~/repos/dmeyf/path.csv.probs')
 
 if (length(args) != 2) {
   stop("Tienen que ser 18 parametros:
