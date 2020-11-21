@@ -6,7 +6,7 @@ rm( list=ls() )
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-# args = c('0.025', '~/repos/dmeyf/path.probs')
+args = c('0.025', '~/repos/dmeyf/path.probs')
 
 if (length(args) != 2) {
   stop("Tienen que ser 18 parametros:
@@ -17,8 +17,8 @@ if (length(args) != 2) {
 library(data.table)
 library(rutiles)
 
-prob_de_corte = args[1]
-path_prob = as.numeric(args[2])
+prob_de_corte = as.numeric(args[1])
+path_prob = args[2]
 path_salida = paste0(path_prob,'.', args[1], '.csv')
 
 probs = fread(path_prob, sep = ',')
