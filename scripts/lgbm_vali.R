@@ -6,10 +6,10 @@ rm( list=ls() )
 args = commandArgs(trailingOnly=TRUE)
 
 # PARA DEBUG
-# args = c('201906', '201911', '201907-201910', '10', 'min_data_in_leaf=9822-learning_rate=0.01', '0.01_0.3_15', '1', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', '50', '0.01','~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz')
+# args = c('201906', '201911', '201907-201910', '10', 'min_data_in_leaf=9822-learning_rate=0.01', '0.01_0.3_15', '1', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', '50', '0.01','~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/workspace/validaciones.txt')
 
-if (length(args) != 11) {
-  stop("Tienen que ser 11 parametros:
+if (length(args) != 12) {
+  stop("Tienen que ser 12 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
   3: meses de validacion: 201905-202003-201805-...
@@ -20,7 +20,9 @@ if (length(args) != 11) {
   8: path features importantes: '~/features_procesadas.txt'
   9: top features importantes a usar: 10, 20, 100, ...
   10: undersampling: 0.01, 0.1, 1.0, ...
-  11: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'", call.=FALSE)
+  11: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
+  12: path validaciones: '~/validaciones.txt'
+       ", call.=FALSE)
 }
 
 require(data.table)
@@ -65,6 +67,7 @@ path_features = args[8]
 top_features = as.integer(args[9])
 undersampling = as.numeric(args[10])
 dataset_path = args[11]
+path_validaciones = args[12]
 
 dataset = levantar_clientes(path = dataset_path)
 
@@ -117,6 +120,26 @@ for (prob_de_corte in seq(prob_de_corte_desde, prob_de_corte_hasta, length.out =
   }
 }
 cat('mejor ganacia promedio:', mejor_ganancia, ', prob corte:', mejor_prob)
+
+if (file.exists(path_validaciones)) {
+  validaciones = fread(path_validaciones, sep = ',')
+  
+  nuevo_id = ifelse(is.na(validaciones[order(-id),id,][1]), 0,validaciones[order(-id),id,][1])  + 1
+  nueva_validacion = list(nuevo_id, foto_mes_desde, foto_mes_hasta, args[3], iteraciones,
+                          as.integer(parametros[['min_data_in_leaf']]),
+                          as.integer(parametros[['num_leaves']]),
+                          as.numeric(parametros[['learning_rate']]),
+                          as.numeric(parametros[['feature_fraction']]),
+                          as.numeric(parametros[['min_gain_to_split']]),
+                          as.numeric(parametros[['lambda_l1']]),
+                          as.numeric(parametros[['lambda_l2']]),
+                          path_features, top_features, undersampling,
+                          mejor_ganancia, mejor_prob
+                          )
+  
+  validaciones = rbind(validaciones, nueva_validacion)
+  fwrite(validaciones, sep = ',',  file = path_validaciones)
+}
 
 rm(list = ls())
 gc()
