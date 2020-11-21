@@ -108,7 +108,7 @@ for (prob_de_corte in seq(prob_de_corte_desde, prob_de_corte_hasta, length.out =
     ganancia = rutiles::ganancia(real = dataset[foto_mes == foto_mes_validacion, baja], prediccion = as.integer(prediccion > prob_de_corte), imprimir = T, devolver = T)
     ganancia_total = ganancia_total + ganancia
   }
-  cat('ganacia promedio para', prob_de_corte, ':', ganancia_total, '\n')
+  cat('ganacia promedio para', prob_de_corte, ':', ganancia_total / length(foto_meses_validacion), '\n')
   if (ganancia_total > mejor_ganancia) {
     mejor_ganancia = ganancia_total
     mejor_prob = prob_de_corte
