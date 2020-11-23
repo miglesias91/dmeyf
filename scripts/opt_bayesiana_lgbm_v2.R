@@ -72,7 +72,7 @@ prob_corte_inicial = as.numeric(args[11])
 
 # pruebo numero de corrida hasta el llegar al ultimo numero de archivo de salida
 n_corrida = 1
-while(file.exists(paste0(carpeta,"/", n_corrida, ".log"))) {
+while(file.exists(paste0(carpeta,"/", n_corrida, ".json"))) {
   n_corrida = n_corrida + 1
 }
 
@@ -193,6 +193,7 @@ ganancia_lgbm = function(x) {
       plambda_l1, '\t',
       plambda_l2, '\t',
       pprob_corte, '\t',
+      nrounds_optimo, '\t',
       ganancia, '\n')
   
   return(ganancia)
@@ -300,7 +301,9 @@ if(!file.exists(rdata)) {
       'plambda_l1', '\t',
       'plambda_l2', '\t',
       'pprob_corte', '\t',
-      'ganancia','\t', 'n_iteraciones: ', n_iteraciones, '\n')
+      'pnrounds_optimo', '\t',
+      'ganancia','\t',
+      'n_iteraciones: ', n_iteraciones, '\n')
   
   # INICIO EJECUCIÓN DESDE CERO
   run = mbo(funcion_objetivo, learner = aprendedor, control = control)
@@ -314,19 +317,59 @@ tbl = as.data.table(run$opt.path)
 setorder(tbl, -y)
 mejor_pnrounds = tbl[1, pnum_iterations]
 
+pmin_data_in_leaf = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])
+if (is.null(run$x$pmin_data_in_leaf) == F){
+  pmin_data_in_leaf = run$x$pmin_data_in_leaf
+}
+
+pnum_leaves = as.integer(rangos_de_parametros[['num_leaves']]['desde'])
+if (is.null(run$x$pnum_leaves) == F){
+  pnum_leaves = run$x$pnum_leaves
+}
+
+pfeature_fraction = as.numeric(rangos_de_parametros[['feature_fraction']]['desde'])
+if (is.null(run$x$pfeature_fraction) == F){
+  pfeature_fraction = run$x$pfeature_fraction
+}
+
+pmin_gain_to_split = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde'])
+if (is.null(run$x$pmin_gain_to_split) == F){
+  pmin_gain_to_split = run$x$pmin_gain_to_split
+}
+
+plearning_rate = as.numeric(rangos_de_parametros[['learning_rate']]['desde'])
+if (is.null(run$x$plearning_rate) == F){
+  plearning_rate = run$x$plearning_rate
+}
+
+plambda_l1 = as.numeric(rangos_de_parametros[['lambda_l1']]['desde'])
+if (is.null(run$x$plambda_l1) == F){
+  plambda_l1 = run$x$plambda_l1
+}
+
+plambda_l2 = as.numeric(rangos_de_parametros[['lambda_l2']]['desde'])
+if (is.null(run$x$plambda_l2) == F){
+  plambda_l2 = run$x$plambda_l2
+}
+
+pprob_corte = as.numeric(rangos_de_parametros[['prob_corte']]['desde'])
+if (is.null(run$x$pprob_corte) == F){
+  pprob_corte = run$x$pprob_corte
+}
+
 jsonsalida = paste0(
   '{
   "algoritmo" : "lgbm",
   "ganancia" : ', run$y, ',
   "nrounds" : ', mejor_pnrounds, ',
-  "min_data_in_leaf" : ', run$x$pmin_data_in_leaf, ',
-  "num_leaves" : ', run$x$pnum_leaves, ',
-  "feature_fraction" : ', run$x$pfeature_fraction, ',
-  "min_gain_to_split" : ', run$x$pmin_gain_to_split, ',
-  "learning_rate" : ', run$x$plearning_rate, ',
-  "lambda_l1" : ', run$x$plambda_l1, ',
-  "lambda_l2" : ', run$x$plambda_l2, ',
-  "prob_corte" : ', run$x$pprob_corte,
+  "min_data_in_leaf" : ', pmin_data_in_leaf, ',
+  "num_leaves" : ', pnum_leaves, ',
+  "feature_fraction" : ', pfeature_fraction, ',
+  "min_gain_to_split" : ', pmin_gain_to_split, ',
+  "learning_rate" : ', plearning_rate, ',
+  "lambda_l1" : ', plambda_l1, ',
+  "lambda_l2" : ', plambda_l2, ',
+  "prob_corte" : ', pprob_corte,
   '
   }'
 )
