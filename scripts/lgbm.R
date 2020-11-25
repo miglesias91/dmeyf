@@ -8,8 +8,8 @@ args = commandArgs(trailingOnly=TRUE)
 # PARA DEBUG
 # args = c('201906', '201911', '202001', '100', '0.001', '100', '1', '~/repos/dmeyf/features-importantes-lgbm/features_minmax_historicos2meses.txt', '200', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/lgbm_basico.csv')
 
-if (length(args) != 12) {
-  stop("Tienen que ser 12 parametros:
+if (length(args) != 13) {
+  stop("Tienen que ser 13 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
   3: mes de evaluacion: 202001, 201911, ...
@@ -21,7 +21,9 @@ if (length(args) != 12) {
   9: top features importantes a usar: 10, 20, 100, ...
   10: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
   11: path de salida: '~/lgbm.csv'
-  12: imprimir importantes: T o F", call.=FALSE)
+  12: imprimir importantes: T o F
+  13: incluir foto_mes: T o F
+       ", call.=FALSE)
 }
 
 require(data.table)
@@ -63,6 +65,7 @@ top_features = as.integer(args[9])
 dataset_path = args[10]
 path_salida = args[11]
 imprimir_importantes = as.logical(args[12])
+incluir_foto_mes = as.logical(args[13])
 
 dataset = levantar_clientes(path = dataset_path)
 
@@ -72,7 +75,12 @@ if (path_features != '-') {
   features = fread(path_features)
   features = names(features)[1:top_features]
 } else {
-  features = setdiff(names(dataset), c('numero_de_cliente', 'foto_mes', 'baja'))
+  if (incluir_foto_mes) {
+    features = setdiff(names(dataset), c('numero_de_cliente', 'baja'))
+  } else {
+    features = setdiff(names(dataset), c('numero_de_cliente', 'foto_mes', 'baja'))
+  }
+  
 }
 
 dentrenamiento = dataset[foto_mes_desde <= foto_mes & foto_mes <= foto_mes_hasta & foto_mes != foto_mes_evaluacion]

@@ -32,7 +32,7 @@ var_diff_y_acums = c(str_subset(names(dataset), 'acum_'), str_subset(names(datas
 
 #creo los campos lags 'el valor del mes anterior'
 setorderv( dataset, c('numero_de_cliente','foto_mes') ) #ordeno
-campos_lags = setdiff(  colnames(dataset) ,  c('clase_ternaria', 'numero_de_cliente', var_diff_y_acums) )
+campos_lags = setdiff(  colnames(dataset) ,  c('baja', 'numero_de_cliente', 'foto_mes', var_diff_y_acums) )
 dataset[,  paste0( 'lag1_', campos_lags) := shift(.SD, 1, NA, 'lag'), by = numero_de_cliente, .SDcols = campos_lags]
 dataset[,  paste0( 'lag2_', campos_lags) := shift(.SD, 2, NA, 'lag'), by = numero_de_cliente, .SDcols = campos_lags]
 
