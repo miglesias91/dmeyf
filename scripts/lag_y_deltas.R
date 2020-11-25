@@ -20,6 +20,7 @@ if (length(args) != 2) {
 
 require('data.table')
 require('lightgbm')
+require('stringr')
 
 dataset_path = args[1]
 dataset_path_salida = args[2]
@@ -32,14 +33,13 @@ var_diff_y_acums = c(str_subset(names(dataset), 'acum_'), str_subset(names(datas
 #creo los campos lags 'el valor del mes anterior'
 setorderv( dataset, c('numero_de_cliente','foto_mes') ) #ordeno
 campos_lags = setdiff(  colnames(dataset) ,  c('clase_ternaria', 'numero_de_cliente', var_diff_y_acums) )
-dataset[,  paste0( campos_lags, 'lag1_') := shift(.SD, 1, NA, 'lag'), by = numero_de_cliente, .SDcols = campos_lags]
-dataset[,  paste0( campos_lags, 'lag2_') := shift(.SD, 2, NA, 'lag'), by = numero_de_cliente, .SDcols = campos_lags]
+dataset[,  paste0( 'lag1_', campos_lags) := shift(.SD, 1, NA, 'lag'), by = numero_de_cliente, .SDcols = campos_lags]
+dataset[,  paste0( 'lag2_', campos_lags) := shift(.SD, 2, NA, 'lag'), by = numero_de_cliente, .SDcols = campos_lags]
 
-for( vcol in campos_lags )
-{
-  dataset[, paste0(vcol, 'delta1_') := get( vcol) - get(paste0( vcol, 'lag1_')) ]
-  dataset[, paste0(vcol, 'delta2_') := get( vcol) - get(paste0( vcol, 'lag2_')) ]
-  dataset[, paste0(vcol, 'delta3_') := get(paste0( vcol, 'lag1_')) - get(paste0( vcol, 'lag2_')) ]
+for( vcol in campos_lags ) {
+  dataset[, paste0('delta1_', vcol) := get(vcol) - get( paste0('lag1_', vcol) ) ]
+  dataset[, paste0('delta2_', vcol) := get(vcol) - get( paste0('lag2_', vcol) ) ]
+  dataset[, paste0('delta3_', vcol) := get( paste0('lag1_', vcol) ) - get( paste0('lag2_', vcol) ) ]
 }
 
 fwrite(dataset, file = dataset_path_salida, sep = '\t')
