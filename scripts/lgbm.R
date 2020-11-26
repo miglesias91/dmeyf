@@ -40,6 +40,7 @@ iteraciones = as.integer(args[4])
 parametros = list()
 parametros[['min_data_in_leaf']] = '20'
 parametros[['num_leaves']] = '31'
+parametros[['max_bin']] = '255'
 parametros[['learning_rate']] = '0.1'
 parametros[['feature_fraction']] = '1.0'
 parametros[['min_gain_to_split']] = '0'
@@ -91,7 +92,7 @@ entrenamiento = lgb.Dataset(data = data.matrix(dentrenamiento[, ..features]),
 
 modelo = lgb.train(data = entrenamiento, objective = 'binary',
                    boost_from_average = T,
-                   max_bin= 31,
+                   max_bin= as.integer(parametros[['max_bin']]),
                    num_iterations = iteraciones,
                    min_data_in_leaf = as.integer(parametros[['min_data_in_leaf']]),
                    learning_rate = as.numeric(parametros[['learning_rate']]),

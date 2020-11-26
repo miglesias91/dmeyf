@@ -40,6 +40,7 @@ foto_mes_evaluacion = as.integer(args[3])
 rangos_de_parametros = list()
 rangos_de_parametros[['min_data_in_leaf']] = list('desde' = '20', 'hasta' = '20')
 rangos_de_parametros[['num_leaves']] = list('desde' = '31', 'hasta' = '31')
+rangos_de_parametros[['max_bin']] = list('desde' = '255', 'hasta' = '255')
 rangos_de_parametros[['learning_rate']] = list('desde' = '0.1', 'hasta' = '0.1')
 rangos_de_parametros[['feature_fraction']] = list('desde' = '1.0', 'hasta' = '1.0')
 rangos_de_parametros[['min_gain_to_split']] = list('desde' = '0', 'hasta' = '0')
@@ -117,6 +118,12 @@ ganancia_lgbm = function(x) {
     pnum_leaves = x$pnum_leaves
   }
   
+  if (as.integer(rangos_de_parametros[['max_bin']]['desde']) == as.integer(rangos_de_parametros[['max_bin']]['hasta'])) {
+    pmax_bin = as.integer(rangos_de_parametros[['max_bin']]['desde'])
+  } else {
+    pmax_bin = x$pmax_bin
+  }
+  
   if (as.numeric(rangos_de_parametros[['feature_fraction']]['desde']) == as.numeric(rangos_de_parametros[['feature_fraction']]['hasta'])) {
     pfeature_fraction = as.numeric(rangos_de_parametros[['feature_fraction']]['desde'])
   } else {
@@ -172,7 +179,7 @@ ganancia_lgbm = function(x) {
                      num_leaves = pnum_leaves,
                      lambda_l1 = plambda_l1,
                      lambda_l2 = plambda_l2,
-                     max_bin = 31,
+                     max_bin = pmax_bin,
                      verbosity = -1)
   
   nrounds_optimo = modelo$best_iter
@@ -187,6 +194,7 @@ ganancia_lgbm = function(x) {
       format(Sys.time(), '%Y%m%d_%H%M%S'), '\t',
       pmin_data_in_leaf, '\t',
       pnum_leaves, '\t',
+      pmax_bin, '\t',
       pfeature_fraction, '\t',
       pmin_gain_to_split, '\t',
       plearning_rate, '\t',
@@ -238,6 +246,10 @@ if (as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde']) != as.intege
 
 if (as.integer(rangos_de_parametros[['num_leaves']]['desde']) != as.integer(rangos_de_parametros[['num_leaves']]['hasta'])) {
   params[['pnum_leaves']] = makeIntegerParam('pnum_leaves', lower = as.integer(rangos_de_parametros[['num_leaves']]['desde']), upper = as.integer(rangos_de_parametros[['num_leaves']]['hasta']))
+}
+
+if (as.integer(rangos_de_parametros[['max_bin']]['desde']) != as.integer(rangos_de_parametros[['max_bin']]['hasta'])) {
+  params[['pmax_bin']] = makeIntegerParam('pmax_bin', lower = as.integer(rangos_de_parametros[['max_bin']]['desde']), upper = as.integer(rangos_de_parametros[['max_bin']]['hasta']))
 }
 
 if (as.numeric(rangos_de_parametros[['feature_fraction']]['desde']) != as.numeric(rangos_de_parametros[['feature_fraction']]['hasta'])) {
@@ -295,6 +307,7 @@ if(!file.exists(rdata)) {
       'fecha', '\t',
       'pmin_data_in_leaf', '\t',
       'pnum_leaves', '\t',
+      'pmax_bin', '\t',
       'pfeature_fraction', '\t',
       'pmin_gain_to_split', '\t', 
       'plearning_rate', '\t',
@@ -325,6 +338,11 @@ if (is.null(run$x$pmin_data_in_leaf) == F){
 pnum_leaves = as.integer(rangos_de_parametros[['num_leaves']]['desde'])
 if (is.null(run$x$pnum_leaves) == F){
   pnum_leaves = run$x$pnum_leaves
+}
+
+pmax_bin = as.integer(rangos_de_parametros[['max_bin']]['desde'])
+if (is.null(run$x$pmax_bin) == F){
+  pmax_bin = run$x$pmax_bin
 }
 
 pfeature_fraction = as.numeric(rangos_de_parametros[['feature_fraction']]['desde'])
@@ -364,6 +382,7 @@ jsonsalida = paste0(
   "nrounds" : ', mejor_pnrounds, ',
   "min_data_in_leaf" : ', pmin_data_in_leaf, ',
   "num_leaves" : ', pnum_leaves, ',
+  "max_bin" : ', pmax_bin, ',
   "feature_fraction" : ', pfeature_fraction, ',
   "min_gain_to_split" : ', pmin_gain_to_split, ',
   "learning_rate" : ', plearning_rate, ',
