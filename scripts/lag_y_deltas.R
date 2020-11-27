@@ -28,6 +28,11 @@ dataset_path_salida = args[2]
 #cargo el dataset donde voy a entrenar
 dataset = fread(dataset_path)
 
+dataset[, baja := as.factor(ifelse(clase_ternaria == 'BAJA+2', 'si', 'no'))]
+
+# y elimino la clase ternaria
+dataset[, clase_ternaria := NULL]
+
 var_diff_y_acums = c(str_subset(names(dataset), 'acum_'), str_subset(names(dataset), 'var_'), str_subset(names(dataset), 'diff_'))
 
 #creo los campos lags 'el valor del mes anterior'
