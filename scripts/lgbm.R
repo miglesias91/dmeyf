@@ -8,21 +8,22 @@ args = commandArgs(trailingOnly=TRUE)
 # PARA DEBUG
 # args = c('201906', '201911', '202001', '100', '0.001', '100', '1', '~/repos/dmeyf/features-importantes-lgbm/features_minmax_historicos2meses.txt', '200', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/lgbm_basico.csv')
 
-if (length(args) != 13) {
-  stop("Tienen que ser 13 parametros:
+if (length(args) != 14) {
+  stop("Tienen que ser 14 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
   3: mes de evaluacion: 202001, 201911, ...
   4: numero de iteraciones: 100, 20, ...
   5: parametros: 'learning_rate=0.0005-num_leaves=800-feature_extraction=0.25-...'
-  6: prob de corte: 0.01, 0.025, 0.25, ...
-  7: log: -1, 0, 1, 2, ...
-  8: path features importantes: '~/features_procesadas.txt'
-  9: top features importantes a usar: 10, 20, 100, ...
-  10: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
-  11: path de salida: '~/lgbm.csv'
-  12: imprimir importantes: T o F
-  13: incluir foto_mes: T o F
+  6: undersampling: 0.01, 0.1, 1.0, ...
+  7: prob de corte: 0.01, 0.025, 0.25, ...
+  8: log: -1, 0, 1, 2, ...
+  9: path features importantes: '~/features_procesadas.txt'
+  10: top features importantes a usar: 10, 20, 100, ...
+  11: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
+  12: path de salida: '~/lgbm.csv'
+  13: imprimir importantes: T o F
+  14: incluir foto_mes: T o F
        ", call.=FALSE)
 }
 
@@ -59,14 +60,15 @@ for (par in pars) {
   parametros[[nombre]] = nombre_valor[2]
 }
 
-prob_de_corte = as.numeric(args[6])
-log = as.integer(args[7])
-path_features = args[8]
-top_features = as.integer(args[9])
-dataset_path = args[10]
-path_salida = args[11]
-imprimir_importantes = as.logical(args[12])
-incluir_foto_mes = as.logical(args[13])
+undersampling = as.numeric(args[6])
+prob_de_corte = as.numeric(args[7])
+log = as.integer(args[8])
+path_features = args[9]
+top_features = as.integer(args[10])
+dataset_path = args[11]
+path_salida = args[12]
+imprimir_importantes = as.logical(args[13])
+incluir_foto_mes = as.logical(args[14])
 
 dataset = levantar_clientes(path = dataset_path)
 
@@ -83,8 +85,11 @@ if (path_features != '-') {
   }
   
 }
+# agrego la columna azar para hacer undersampling
+dataset[, azar := runif(nrow(dataset)) ]
 
-dentrenamiento = dataset[foto_mes_desde <= foto_mes & foto_mes <= foto_mes_hasta & foto_mes != foto_mes_evaluacion]
+# dejo los datos en el formato que necesita LightGBMdtrain = dataset[foto_mes_entrenamiento_desde <= foto_mes & foto_mes <= foto_mes_entrenamiento_hasta & foto_mes != foto_mes_evaluacion & (baja == 1L | azar <= porcion_undersampling)]
+dentrenamiento = dataset[foto_mes_desde <= foto_mes & foto_mes <= foto_mes_hasta & foto_mes != foto_mes_evaluacion & (baja == 1L | azar <= undersampling)]
 
 entrenamiento = lgb.Dataset(data = data.matrix(dentrenamiento[, ..features]),
                             label = dentrenamiento$baja,
