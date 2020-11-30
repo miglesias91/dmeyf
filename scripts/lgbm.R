@@ -70,6 +70,16 @@ path_salida = args[12]
 imprimir_importantes = as.logical(args[13])
 incluir_foto_mes = as.logical(args[14])
 
+fganancia_logistic_lightgbm = function(probs, data)  {
+  vlabels = getinfo(data, 'label')
+  
+  gan = sum((probs > prob_de_corte) * ifelse(vlabels == 1, +29250, -750))
+  
+  return(list(name = 'ganancia',
+              value =  ifelse(is.na(gan), 0, gan),
+              higher_better= TRUE))
+}
+
 dataset = levantar_clientes(path = dataset_path)
 
 dataset[, baja := ifelse(baja == 'si', 1L, 0L)]
@@ -95,13 +105,21 @@ entrenamiento = lgb.Dataset(data = data.matrix(dentrenamiento[, ..features]),
                             label = dentrenamiento$baja,
                             free_raw_data = F)
 
+# valido un año para atras
+validacion = lgb.Dataset(data  = data.matrix(dataset[foto_mes == (foto_mes_evaluacion - 100), ..features]),
+                       label = dataset[foto_mes == (foto_mes_evaluacion - 100), baja],
+                       free_raw_data = F)
+
 modelo = lgb.train(data = entrenamiento, objective = 'binary',
+                   eval = fganancia_logistic_lightgbm,  # esta es la fuciona optimizar
+                   valids = list(valid = validacion),
+                   metric = 'custom',  # ATENCION   tremendamente importante
                    boost_from_average = T,
                    max_bin= as.integer(parametros[['max_bin']]),
                    num_iterations = iteraciones,
                    min_data_in_leaf = as.integer(parametros[['min_data_in_leaf']]),
                    learning_rate = as.numeric(parametros[['learning_rate']]),
-                   # early_stopping_rounds = as.integer(50 + 5/learning_rate),
+                   early_stopping_rounds = as.integer(50 + 5/learning_rate),
                    feature_fraction = as.numeric(parametros[['feature_extraction']]),
                    min_gain_to_split = as.numeric(parametros[['min_gain_to_split']]),
                    num_leaves = as.integer(parametros[['num_leaves']]),

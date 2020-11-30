@@ -494,7 +494,7 @@ for( vsemilla in ksemillas )
          'n_corrida_ob',
          '\n',
          sep = '\t',
-         append = TRUE,
+         append = F,
          file = ganancias_path)
   }
   
