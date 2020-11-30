@@ -245,7 +245,7 @@ dBO_test = lgb.Dataset(data  = data.matrix(dataset[foto_mes == (foto_mes_evaluac
                        free_raw_data = F)
 
 #ahora ya puedo borrar el dataset porque puse free_raw_data=TRUE
-rm(dataset)
+# rm(dataset)
 gc()
 
 #Aqui comienza la configuracion de la Bayesian Optimization

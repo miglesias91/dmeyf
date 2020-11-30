@@ -10,17 +10,22 @@ args = commandArgs(trailingOnly=TRUE)
 
 if (length(args) != 2) {
   stop("Tienen que ser 2 parametros:
-  1: prob de corte: 0.025, 0.05, 0.2, ...
+  1: cantidad de estimulos: 6000, 6500, 7000, ...
   2: path probabilidades", call.=FALSE)
 }
 
 library(data.table)
 library(rutiles)
 
-prob_de_corte = as.numeric(args[1])
+cantidad_de_estimulos = as.numeric(args[1])
 path_prob = args[2]
 path_salida = paste0(path_prob,'.', args[1], '.csv')
 
 probs = fread(path_prob, sep = ',')
 
-rutiles::kaggle_csv(clientes = probs[, numero_de_cliente], estimulos = as.integer(probs[,prob] > prob_de_corte), path = path_salida)
+probs = probs[order(prob)]
+
+numeros = probs$numero_de_cliente[1:cantidad_de_estimulos]
+estimulos = seq(1, 1, length.out = cantidad_de_estimulos)
+
+rutiles::kaggle_csv(clientes = numeros, estimulos = estimulos, path = path_salida)
