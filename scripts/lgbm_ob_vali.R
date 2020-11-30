@@ -29,6 +29,7 @@ if (length(args) != 13) {
 }
 
 require(data.table)
+require(primes)
 require(lightgbm)
 require(rutiles)
 require(DiceKriging)
