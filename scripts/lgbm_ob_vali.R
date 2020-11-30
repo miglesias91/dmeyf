@@ -238,11 +238,11 @@ dataset[, azar := runif(nrow(dataset)) ]
 dtrain = dataset[foto_mes_entrenamiento_desde <= foto_mes & foto_mes <= foto_mes_entrenamiento_hasta & foto_mes != (foto_mes_evaluacion - 100) & (baja == 1L | azar <= porcion_undersampling)]
 dBO_train = lgb.Dataset(data  = data.matrix(dtrain[, ..features]),
                         label = dtrain[, baja],
-                        free_raw_data=TRUE)
+                        free_raw_data = F)
 
 dBO_test = lgb.Dataset(data  = data.matrix(dataset[foto_mes == (foto_mes_evaluacion - 100), ..features]),
                        label = dataset[foto_mes == (foto_mes_evaluacion - 100), baja],
-                       free_raw_data=TRUE)
+                       free_raw_data = F)
 
 #ahora ya puedo borrar el dataset porque puse free_raw_data=TRUE
 rm(dataset)
