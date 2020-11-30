@@ -1,6 +1,6 @@
 # optimizacion bayesiana: meses de entrenamiento + mes de evaluacion + rangos de busqueda de hiperparametros + seleccion de variables importantes (lista y top) + dataset + carpeta de salida + numero de iteraciones + porcion de undersampling de la clase negativa + valor inicial de probabilidad de corte
 
-nohup Rscript --vanilla ~/repos/dmeyf/scripts/opt_bayesiana_lgbm_v2.R 201707 202003 201905 min_data_in_leaf=100_500000-feature_fraction=0.25_0.25-learning_rate=0.02_0.02-prob_corte=0.015_0.35 ~/repos/dmeyf/features-importantes-lgbm/minmax_lagdeltas_hist6meses.txt 200 ~/buckets/b1/datasets/minmax_lags_deltas_hist6meses_final.txt.gz ~/buckets/b2/opt_bayesiana_lgbm 10 0.05 0.2 > ~/corrida_ob.txt && sudo poweroff &
+nohup Rscript --vanilla ~/repos/dmeyf/scripts/opt_bayesiana_lgbm_v2.R 201707 202003 201905 min_data_in_leaf=100_30000-feature_fraction=0.25_0.25-learning_rate=0.02_0.02-prob_corte=0.015_0.35 ~/repos/dmeyf/features-importantes-lgbm/minmax_lagdeltas_hist6meses.txt 200 ~/buckets/b1/datasets/minmax_lags_deltas_hist6meses_final.txt.gz ~/buckets/b2/opt_bayesiana_lgbm 10 0.05 0.2 > ~/corrida_ob.txt && sudo poweroff &
 
 
 # lgbm: meses de entrenamiento + mes de evaluacion + numero de iteraciones + learning rate + min data in leaf + num leaves + feature fraction + min data to split + lambda1 + lambda2 + prob de corte + log + seleccion de variables importantes (lista y top) + dataset + csv de salida + imprimir variables importantes
@@ -14,3 +14,7 @@ nohup Rscript --vanilla repos/dmeyf/scripts/lgbm_vali.R 201707 202003 201805-201
 # subir a kaggle
 
 kaggle competitions submit -c dm-eyf-2020-prediccin-2-la-batalla-final -f buckets/b1/work/probs/lgbm/ -m "mensaje"
+
+# optimizacion + validacion con ganancias en publico y privado: la OB teste en el mismo mes de la foto mes de evaluacion, pero 1 año para atras.
+
+nohup Rscript --vanilla ~/repos/dmeyf/scripts/lgbm_ob_vali.R 201701 202001 202003 min_data_in_leaf=100_30000-feature_fraction=0.25_0.25-learning_rate=0.02_0.02-prob_corte=0.2_0.2 ~/repos/dmeyf/features-importantes-lgbm/minmax_hist3_lags_deltas.txt 400 ~/buckets/b1/datasets/minmax_hist3_lags_deltas.txt.gz ~/buckets/b2/opt_bayesiana_lgbm 10 0.05 0.2 ~/buckets/b1/validaciones/publico_y_privado.txt 10 > ~/corrida_ob.txt && sudo poweroff &

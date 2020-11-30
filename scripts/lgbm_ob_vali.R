@@ -10,8 +10,8 @@ args = commandArgs(trailingOnly=TRUE)
 # args = c('201908', '201909', '201911', 'min_data_in_leaf=100_1000', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/buckets/b1/datasets/paquete_premium_201906_202001.txt.gz', '~/buckets/b2/opt_bayesiana_lgbm', 3, 0.05, 0.2)
 
 # test if there is at least one argument: if not, return an error
-if (length(args) != 12) {
-  stop("Tienen que ser 12 parametros:
+if (length(args) != 13) {
+  stop("Tienen que ser 13 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
   3: mes evaluacion
