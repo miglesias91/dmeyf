@@ -14,4 +14,4 @@ Rscript --vanilla ~/repos/dmeyf/scripts/lgbm_vali.R 201701 202003 201805-201905-
 
 Rscript --vanilla ~/repos/dmeyf/scripts/lgbm_vali.R 201701 202003 201805-201905-202002-201708-201911-201802 447 min_data_in_leaf=1000-feature_fraction=0.25-learning_rate=0.02 0.2_0.2_1 2 ~/repos/dmeyf/features-importantes-lgbm/minmax_hist6.txt 400 0.05 ~/buckets/b1/datasets/minmax_hist6.txt.gz ~/buckets/b1/work/validaciones/lgbm.txt &&
 
-Rscript --vanilla ~/repos/dmeyf/scripts/lgbm_vali.R 201701 202003 201805-201905-202002-201708-201911-201802 447 min_data_in_leaf=1000-feature_fraction=0.25-learning_rate=0.02 0.2_0.2_1 2 ~/repos/dmeyf/features-importantes-lgbm/minmax_hist6_lags_deltas.txt 400 0.05 ~/buckets/b1/datasets/minmax_hist6_lags_deltas.txt.gz ~/buckets/b1/work/validaciones/lgbm.txt &&
+Rscript --vanilla ~/repos/dmeyf/scripts/lgbm_vali.R 201701 202003 201805-201905-202002-201708-201911-201802 447 min_data_in_leaf=1000-feature_fraction=0.25-learning_rate=0.02 0.2_0.2_1 2 ~/repos/dmeyf/features-importantes-lgbm/minmax_hist6_lags_deltas.txt 400 0.05 ~/buckets/b1/datasets/minmax_hist6_lags_deltas.txt.gz ~/buckets/b1/work/validaciones/lgbm.txt
