@@ -107,7 +107,7 @@ fganancia_logistic_lightgbm = function(probs, data)  {
 #------------------------------------------------------------------------------
 
 ganancia_public_pcorte = function(x) {
-  gan = sum(dataset_aplicacion[Public==TRUE, (pred >= as.integer(x$pcorte_entero)/100) * ifelse(clase01==1, 29250, -750)])
+  gan = sum(dataset_aplicacion[Public==TRUE, (pred >= as.integer(x$pcorte_entero)/100) * ifelse(baja==1, 29250, -750)])
   return(gan)
 }
 
