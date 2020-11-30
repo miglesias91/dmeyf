@@ -342,9 +342,11 @@ tbl = as.data.table(run$opt.path)
 setorder(tbl, -y)
 mejor_pnrounds = tbl[1, pnum_iterations]
 
+pfeature_pre_filter = T
 pmin_data_in_leaf = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])
 if (is.null(run$x$pmin_data_in_leaf) == F){
   pmin_data_in_leaf = run$x$pmin_data_in_leaf
+  pfeature_pre_filter = F
 }
 
 pnum_leaves = as.integer(rangos_de_parametros[['num_leaves']]['desde'])
