@@ -10,8 +10,8 @@ args = commandArgs(trailingOnly=TRUE)
 # args = c('201908', '201909', '201911', 'min_data_in_leaf=100_1000', '~/repos/dmeyf/features-importantes-lgbm/features_standars.txt', 50,'~/buckets/b1/datasets/paquete_premium_201906_202001.txt.gz', '~/buckets/b2/opt_bayesiana_lgbm', 3, 0.05, 0.2)
 
 # test if there is at least one argument: if not, return an error
-if (length(args) != 13) {
-  stop("Tienen que ser 13 parametros:
+if (length(args) != 14) {
+  stop("Tienen que ser 14 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
   3: mes evaluacion
@@ -24,7 +24,8 @@ if (length(args) != 13) {
   10: undersampling: 0.01, 0.1, 1.0, ...
   11: prob corte inicial: 0.025, 0.25, ...
   12: path ganancias: '~/lgbm_ganancias.txt'
-  13: numero de semillas a evaluar: 10, 100, ...",
+  13: numero de semillas a evaluar: 10, 100, ...
+  14: correr ob: T o F",
        call.=FALSE)
 }
 
@@ -75,6 +76,7 @@ porcion_undersampling = as.numeric(args[10])
 prob_corte_inicial = as.numeric(args[11])
 ganancias_path = args[12]
 n_semillas = as.integer(args[13])
+correr_ob = as.logical(args[14])
 
 # pruebo numero de corrida hasta el llegar al ultimo numero de archivo de salida
 n_corrida = 1
@@ -312,104 +314,118 @@ control = setMBOControlInfill(control, crit = makeMBOInfillCritEI())
 
 aprendedor = makeLearner('regr.km', predict.type = 'se', covtype = 'matern3_2', control = list(trace = FALSE))
 
-if(!file.exists(rdata)) {
-  # escribo cabecera del log 
-  cat(file = log, 
-      append = FALSE,
-      sep = '',
-      'fecha', '\t',
-      'pmin_data_in_leaf', '\t',
-      'pnum_leaves', '\t',
-      'pmax_bin', '\t',
-      'pfeature_fraction', '\t',
-      'pmin_gain_to_split', '\t', 
-      'plearning_rate', '\t',
-      'plambda_l1', '\t',
-      'plambda_l2', '\t',
-      'pprob_corte', '\t',
-      'pnrounds_optimo', '\t',
-      'ganancia','\t',
-      'n_iteraciones: ', n_iteraciones, '\n')
+if(correr_ob) {
+
+  if(!file.exists(rdata)) {
+    # escribo cabecera del log 
+    cat(file = log, 
+        append = FALSE,
+        sep = '',
+        'fecha', '\t',
+        'pmin_data_in_leaf', '\t',
+        'pnum_leaves', '\t',
+        'pmax_bin', '\t',
+        'pfeature_fraction', '\t',
+        'pmin_gain_to_split', '\t', 
+        'plearning_rate', '\t',
+        'plambda_l1', '\t',
+        'plambda_l2', '\t',
+        'pprob_corte', '\t',
+        'pnrounds_optimo', '\t',
+        'ganancia','\t',
+        'n_iteraciones: ', n_iteraciones, '\n')
+    
+    # INICIO EJECUCIÓN DESDE CERO
+    run = mbo(funcion_objetivo, learner = aprendedor, control = control)
+  } else {
+    # RETOMO EJECUCIÓN
+    run = mboContinue(rdata)
+  }
   
-  # INICIO EJECUCIÓN DESDE CERO
-  run = mbo(funcion_objetivo, learner = aprendedor, control = control)
+  # me quedo con el pnrounds de la mejor corrida
+  tbl = as.data.table(run$opt.path)
+  setorder(tbl, -y)
+  mejor_pnrounds = tbl[1, pnum_iterations]
+  
+  pfeature_pre_filter = T
+  pmin_data_in_leaf = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])
+  if (is.null(run$x$pmin_data_in_leaf) == F){
+    pmin_data_in_leaf = run$x$pmin_data_in_leaf
+    pfeature_pre_filter = F
+  }
+  
+  pnum_leaves = as.integer(rangos_de_parametros[['num_leaves']]['desde'])
+  if (is.null(run$x$pnum_leaves) == F){
+    pnum_leaves = run$x$pnum_leaves
+  }
+  
+  pmax_bin = as.integer(rangos_de_parametros[['max_bin']]['desde'])
+  if (is.null(run$x$pmax_bin) == F){
+    pmax_bin = run$x$pmax_bin
+  }
+  
+  pfeature_fraction = as.numeric(rangos_de_parametros[['feature_fraction']]['desde'])
+  if (is.null(run$x$pfeature_fraction) == F){
+    pfeature_fraction = run$x$pfeature_fraction
+  }
+  
+  pmin_gain_to_split = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde'])
+  if (is.null(run$x$pmin_gain_to_split) == F){
+    pmin_gain_to_split = run$x$pmin_gain_to_split
+  }
+  
+  plearning_rate = as.numeric(rangos_de_parametros[['learning_rate']]['desde'])
+  if (is.null(run$x$plearning_rate) == F){
+    plearning_rate = run$x$plearning_rate
+  }
+  
+  plambda_l1 = as.numeric(rangos_de_parametros[['lambda_l1']]['desde'])
+  if (is.null(run$x$plambda_l1) == F){
+    plambda_l1 = run$x$plambda_l1
+  }
+  
+  plambda_l2 = as.numeric(rangos_de_parametros[['lambda_l2']]['desde'])
+  if (is.null(run$x$plambda_l2) == F){
+    plambda_l2 = run$x$plambda_l2
+  }
+  
+  pprob_corte = as.numeric(rangos_de_parametros[['prob_corte']]['desde'])
+  if (is.null(run$x$pprob_corte) == F){
+    pprob_corte = run$x$pprob_corte
+  }
+  
+  jsonsalida = paste0(
+    '{
+    "algoritmo" : "lgbm",
+    "ganancia" : ', run$y, ',
+    "nrounds" : ', mejor_pnrounds, ',
+    "min_data_in_leaf" : ', pmin_data_in_leaf, ',
+    "num_leaves" : ', pnum_leaves, ',
+    "max_bin" : ', pmax_bin, ',
+    "feature_fraction" : ', pfeature_fraction, ',
+    "min_gain_to_split" : ', pmin_gain_to_split, ',
+    "learning_rate" : ', plearning_rate, ',
+    "lambda_l1" : ', plambda_l1, ',
+    "lambda_l2" : ', plambda_l2, ',
+    "prob_corte" : ', pprob_corte,
+    '
+    }'
+  )
+  
+  write(x = jsonsalida, salida)
+
 } else {
-  # RETOMO EJECUCIÓN
-  run = mboContinue(rdata)
+  pfeature_pre_filter = T
+  pmin_data_in_leaf = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])
+  pnum_leaves = as.integer(rangos_de_parametros[['num_leaves']]['desde'])
+  pmax_bin = as.integer(rangos_de_parametros[['max_bin']]['desde'])
+  pfeature_fraction = as.numeric(rangos_de_parametros[['feature_fraction']]['desde'])
+  pmin_gain_to_split = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde'])
+  plearning_rate = as.numeric(rangos_de_parametros[['learning_rate']]['desde'])
+  plambda_l1 = as.numeric(rangos_de_parametros[['lambda_l1']]['desde'])
+  plambda_l2 = as.numeric(rangos_de_parametros[['lambda_l2']]['desde'])
+  pprob_corte = as.numeric(rangos_de_parametros[['prob_corte']]['desde'])
 }
-
-# me quedo con el pnrounds de la mejor corrida
-tbl = as.data.table(run$opt.path)
-setorder(tbl, -y)
-mejor_pnrounds = tbl[1, pnum_iterations]
-
-pfeature_pre_filter = T
-pmin_data_in_leaf = as.integer(rangos_de_parametros[['min_data_in_leaf']]['desde'])
-if (is.null(run$x$pmin_data_in_leaf) == F){
-  pmin_data_in_leaf = run$x$pmin_data_in_leaf
-  pfeature_pre_filter = F
-}
-
-pnum_leaves = as.integer(rangos_de_parametros[['num_leaves']]['desde'])
-if (is.null(run$x$pnum_leaves) == F){
-  pnum_leaves = run$x$pnum_leaves
-}
-
-pmax_bin = as.integer(rangos_de_parametros[['max_bin']]['desde'])
-if (is.null(run$x$pmax_bin) == F){
-  pmax_bin = run$x$pmax_bin
-}
-
-pfeature_fraction = as.numeric(rangos_de_parametros[['feature_fraction']]['desde'])
-if (is.null(run$x$pfeature_fraction) == F){
-  pfeature_fraction = run$x$pfeature_fraction
-}
-
-pmin_gain_to_split = as.numeric(rangos_de_parametros[['min_gain_to_split']]['desde'])
-if (is.null(run$x$pmin_gain_to_split) == F){
-  pmin_gain_to_split = run$x$pmin_gain_to_split
-}
-
-plearning_rate = as.numeric(rangos_de_parametros[['learning_rate']]['desde'])
-if (is.null(run$x$plearning_rate) == F){
-  plearning_rate = run$x$plearning_rate
-}
-
-plambda_l1 = as.numeric(rangos_de_parametros[['lambda_l1']]['desde'])
-if (is.null(run$x$plambda_l1) == F){
-  plambda_l1 = run$x$plambda_l1
-}
-
-plambda_l2 = as.numeric(rangos_de_parametros[['lambda_l2']]['desde'])
-if (is.null(run$x$plambda_l2) == F){
-  plambda_l2 = run$x$plambda_l2
-}
-
-pprob_corte = as.numeric(rangos_de_parametros[['prob_corte']]['desde'])
-if (is.null(run$x$pprob_corte) == F){
-  pprob_corte = run$x$pprob_corte
-}
-
-jsonsalida = paste0(
-  '{
-  "algoritmo" : "lgbm",
-  "ganancia" : ', run$y, ',
-  "nrounds" : ', mejor_pnrounds, ',
-  "min_data_in_leaf" : ', pmin_data_in_leaf, ',
-  "num_leaves" : ', pnum_leaves, ',
-  "max_bin" : ', pmax_bin, ',
-  "feature_fraction" : ', pfeature_fraction, ',
-  "min_gain_to_split" : ', pmin_gain_to_split, ',
-  "learning_rate" : ', plearning_rate, ',
-  "lambda_l1" : ', plambda_l1, ',
-  "lambda_l2" : ', plambda_l2, ',
-  "prob_corte" : ', pprob_corte,
-  '
-  }'
-)
-
-write(x = jsonsalida, salida)
-
 #calculo el modelo final que usa el valor optimo de tamaño de hoja encontrado antes
 modelo_final = lgb.train(data = dBO_train,
                          objective = 'binary',  # la clase es binaria

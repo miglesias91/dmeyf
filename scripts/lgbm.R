@@ -71,13 +71,13 @@ imprimir_importantes = as.logical(args[13])
 incluir_foto_mes = as.logical(args[14])
 
 fganancia_logistic_lightgbm = function(probs, data)  {
-  vlabels = getinfo(data, 'label')
+  tbl <- as.data.table( list( "prob"=probs, "gan"= ifelse( vlabels==1, 29250, -750 ) ) )
   
-  gan = sum((probs > prob_de_corte) * ifelse(vlabels == 1, +29250, -750))
+  setorder( tbl, -prob )
+  tbl[ , gan_acum :=  cumsum( gan ) ]
+  gan <- max( tbl$gan_acum )
   
-  return(list(name = 'ganancia',
-              value =  ifelse(is.na(gan), 0, gan),
-              higher_better= TRUE))
+  return(  list( name= "ganancia", value=  gan, higher_better= TRUE ) )
 }
 
 dataset = levantar_clientes(path = dataset_path)
@@ -126,6 +126,8 @@ modelo = lgb.train(data = entrenamiento, objective = 'binary',
                    lambda_l1 = as.numeric(parametros[['lambda_l1']]),
                    lambda_l2 = as.numeric(parametros[['lambda_l2']]),
                    verbose = log)
+
+lgb.save(modelo, paste0(path_salida, '.modelo'))
 
 prediccion = predict(modelo, data.matrix( dataset[foto_mes == foto_mes_evaluacion, ..features]))
 
