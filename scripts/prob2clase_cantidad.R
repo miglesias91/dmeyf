@@ -23,9 +23,8 @@ path_salida = paste0(path_prob,'.', args[1], '.csv')
 
 probs = fread(path_prob, sep = ',')
 
-probs = probs[order(prob)]
+probs = probs[order(-prob)]
 
-numeros = probs$numero_de_cliente[1:cantidad_de_estimulos]
-estimulos = seq(1, 1, length.out = cantidad_de_estimulos)
+estimulos = c(seq(1, 1, length.out = cantidad_de_estimulos), seq(0, 0, length.out = length(probs$numero_de_cliente) - cantidad_de_estimulos))
 
-rutiles::kaggle_csv(clientes = numeros, estimulos = estimulos, path = path_salida)
+rutiles::kaggle_csv(clientes = probs$numero_de_cliente, estimulos = estimulos, path = path_salida)
