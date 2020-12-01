@@ -231,7 +231,7 @@ if (path_features != '-') {
 
 # agrego la columna azar para hacer undersampling
 
-psemilla_undersampling = 230047 
+psemilla_undersampling = 102191
 set.seed(psemilla_undersampling)
 dataset[, azar := runif(nrow(dataset)) ]
 
