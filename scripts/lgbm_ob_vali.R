@@ -34,7 +34,7 @@ require(rutiles)
 require(DiceKriging)
 require(mlrMBO)
 
-fotos_meses_evaluacion = strsplit(args[1], '-')[[1]]
+fotos_meses_evaluacion = as.integer(strsplit(args[1], '-')[[1]])
 
 # seteo los rangos de parametros por default:
 rangos_de_parametros = list()
