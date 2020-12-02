@@ -71,6 +71,8 @@ imprimir_importantes = as.logical(args[13])
 incluir_foto_mes = as.logical(args[14])
 
 fganancia_logistic_lightgbm = function(probs, data)  {
+  
+  vlabels = getinfo(data, 'label')
   tbl <- as.data.table( list( "prob"=probs, "gan"= ifelse( vlabels==1, 29250, -750 ) ) )
   
   setorder( tbl, -prob )
