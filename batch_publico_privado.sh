@@ -1,0 +1,9 @@
+!#/bin/bash
+
+Rscript --vanilla ~/repos/dmeyf/scripts/lgbm_ob_vali.R 201701 202001 202003 min_data_in_leaf=15000_15000-feature_fraction=0.75_0.75-learning_rate=0.01_0.01-prob_corte=0.2_0.2 ~/repos/dmeyf/features-importantes-lgbm/minmax_hist3_lags_deltas.txt 400 ~/buckets/b1/datasets/minmax_hist3_lags_deltas.txt.gz ~/buckets/b1/work/obs/20201202 10 0.05 0.2 ~/buckets/b1/work/probs/lgbm/20201202/hist3_lags_deltas_publico_y_privado.txt 10 F > ~/corrida_ob_vali_hist3_lags_deltas.txt &&
+
+Rscript --vanilla ~/repos/dmeyf/scripts/lgbm_ob_vali.R 201701 202001 202003 min_data_in_leaf=15000_15000-feature_fraction=0.75_0.75-learning_rate=0.01_0.01-prob_corte=0.2_0.2 ~/repos/dmeyf/features-importantes-lgbm/minmax_hist6_lags_deltas.txt 400 ~/buckets/b1/datasets/minmax_hist6_lags_deltas.txt.gz ~/buckets/b1/work/obs/20201202 10 0.05 0.2 ~/buckets/b1/work/probs/lgbm/20201202/hist6_lags_deltas_publico_y_privado.txt 10 F > ~/corrida_ob_vali_hist6_lags_deltas.txt &&
+
+Rscript --vanilla ~/repos/dmeyf/scripts/lgbm_ob_vali.R 201701 202001 202003 min_data_in_leaf=15000_15000-feature_fraction=0.75_0.75-learning_rate=0.01_0.01-prob_corte=0.2_0.2 ~/repos/dmeyf/features-importantes-lgbm/minmax_hist9_lags_deltas.txt 400 ~/buckets/b1/datasets/minmax_hist9_lags_deltas.txt.gz ~/buckets/b1/work/obs/20201202 10 0.05 0.2 ~/buckets/b1/work/probs/lgbm/20201202/hist9_lags_deltas_publico_y_privado.txt 10 F > ~/corrida_ob_vali_hist9_lags_deltas.txt &&
+
+Rscript --vanilla ~/repos/dmeyf/scripts/lgbm_ob_vali.R 201701 202001 202003 min_data_in_leaf=15000_15000-feature_fraction=0.75_0.75-learning_rate=0.01_0.01-prob_corte=0.2_0.2 ~/repos/dmeyf/features-importantes-lgbm/minmax_hist12_lags_deltas.txt 400 ~/buckets/b1/datasets/minmax_hist12_lags_deltas.txt.gz ~/buckets/b1/work/obs/20201202 10 0.05 0.2 ~/buckets/b1/work/probs/lgbm/20201202/hist12_lags_deltas_publico_y_privado.txt 10 F > ~/corrida_ob_vali_hist12_lags_deltas.txt
