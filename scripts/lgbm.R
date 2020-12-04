@@ -8,22 +8,24 @@ args = commandArgs(trailingOnly=TRUE)
 # PARA DEBUG
 # args = c('201906', '201911', '202001', '100', '0.001', '100', '1', '~/repos/dmeyf/features-importantes-lgbm/features_minmax_historicos2meses.txt', '200', '~/Documentos/maestria-dm/dm-eyf/datasets/paquete_premium_201906_202001.txt.gz', '~/Documentos/maestria-dm/dm-eyf/kaggle/lgbm_basico.csv')
 
-if (length(args) != 14) {
-  stop("Tienen que ser 14 parametros:
+if (length(args) != 16) {
+  stop("Tienen que ser 16 parametros:
   1: mes entrenamiento 'desde'
   2: mes entrenamiento 'hasta'
-  3: mes de evaluacion: 202001, 201911, ...
-  4: numero de iteraciones: 100, 20, ...
-  5: parametros: 'learning_rate=0.0005-num_leaves=800-feature_extraction=0.25-...'
-  6: undersampling: 0.01, 0.1, 1.0, ...
-  7: prob de corte: 0.01, 0.025, 0.25, ...
-  8: log: -1, 0, 1, 2, ...
-  9: path features importantes: '~/features_procesadas.txt'
-  10: top features importantes a usar: 10, 20, 100, ...
-  11: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
-  12: path de salida: '~/lgbm.csv'
-  13: imprimir importantes: T o F
-  14: incluir foto_mes: T o F
+  3: mes de validacion: 201905, 201912, ...
+  4: mes de evaluacion: 202001, 201911, ...
+  5: numero de iteraciones: 100, 20, ...
+  6: parametros: 'learning_rate=0.0005-num_leaves=800-feature_extraction=0.25-...'
+  7: undersampling: 0.01, 0.1, 1.0, ...
+  8: prob de corte: 0.01, 0.025, 0.25, ...
+  9: log: -1, 0, 1, 2, ...
+  10: path features importantes: '~/features_procesadas.txt'
+  11: top features importantes a usar: 10, 20, 100, ...
+  12: path dataset entrada: '~/paquete_premium_201906_202001.txt.gz'
+  13: path de salida: '~/lgbm.csv'
+  14: imprimir importantes: T o F
+  15: incluir foto_mes: T o F
+  16: sacar meses fallados (201801, 201802, 201910, 201911): T o F
        ", call.=FALSE)
 }
 
@@ -34,8 +36,9 @@ require(lightgbm)
 
 foto_mes_desde = as.integer(args[1])
 foto_mes_hasta = as.integer(args[2])
-foto_mes_evaluacion = as.integer(args[3])
-iteraciones = as.integer(args[4])
+foto_mes_validacion = as.integer(args[3])
+foto_mes_evaluacion = as.integer(args[4])
+iteraciones = as.integer(args[5])
 
 # seteo los rangos de parametros por default:
 parametros = list()
@@ -48,7 +51,7 @@ parametros[['min_gain_to_split']] = '0'
 parametros[['lambda_l1']] = '0'
 parametros[['lambda_l2']] = '0'
 
-pars = strsplit(args[5], '-')[[1]]
+pars = strsplit(args[6], '-')[[1]]
 for (par in pars) {
   nombre_valor = strsplit(par, '=')[[1]]
   nombre = nombre_valor[1]
@@ -60,15 +63,16 @@ for (par in pars) {
   parametros[[nombre]] = nombre_valor[2]
 }
 
-undersampling = as.numeric(args[6])
-prob_de_corte = as.numeric(args[7])
-log = as.integer(args[8])
-path_features = args[9]
-top_features = as.integer(args[10])
-dataset_path = args[11]
-path_salida = args[12]
-imprimir_importantes = as.logical(args[13])
-incluir_foto_mes = as.logical(args[14])
+undersampling = as.numeric(args[7])
+prob_de_corte = as.numeric(args[8])
+log = as.integer(args[9])
+path_features = args[10]
+top_features = as.integer(args[11])
+dataset_path = args[12]
+path_salida = args[13]
+imprimir_importantes = as.logical(args[14])
+incluir_foto_mes = as.logical(args[15])
+sacar_meses_fallados = as.logical(args[16])
 
 fganancia_logistic_lightgbm = function(probs, data)  {
   
@@ -101,15 +105,21 @@ if (path_features != '-') {
 dataset[, azar := runif(nrow(dataset)) ]
 
 # dejo los datos en el formato que necesita LightGBMdtrain = dataset[foto_mes_entrenamiento_desde <= foto_mes & foto_mes <= foto_mes_entrenamiento_hasta & foto_mes != foto_mes_evaluacion & (baja == 1L | azar <= porcion_undersampling)]
-dentrenamiento = dataset[foto_mes_desde <= foto_mes & foto_mes <= foto_mes_hasta & foto_mes != foto_mes_evaluacion & (baja == 1L | azar <= undersampling)]
+# dentrenamiento = dataset[foto_mes_desde <= foto_mes & foto_mes <= foto_mes_hasta & foto_mes != foto_mes_evaluacion & (baja == 1L | azar <= undersampling)]
+fotos_meses_fallados = c()
+if (sacar_meses_fallados) {
+  fotos_meses_fallados = c(201801, 201802, 201910, 201911)
+}
+
+dentrenamiento = dataset[foto_mes_desde <= foto_mes & foto_mes <= foto_mes_hasta & foto_mes != foto_mes_evaluacion & foto_mes != foto_mes_validacion  & !(foto_mes %in% fotos_meses_fallados) & (baja == 1L | azar <= undersampling)]
 
 entrenamiento = lgb.Dataset(data = data.matrix(dentrenamiento[, ..features]),
                             label = dentrenamiento$baja,
                             free_raw_data = F)
 
 # valido un año para atras
-validacion = lgb.Dataset(data  = data.matrix(dataset[foto_mes == (foto_mes_evaluacion - 100), ..features]),
-                       label = dataset[foto_mes == (foto_mes_evaluacion - 100), baja],
+validacion = lgb.Dataset(data  = data.matrix(dataset[foto_mes == foto_mes_validacion, ..features]),
+                       label = dataset[foto_mes == foto_mes_validacion, baja],
                        free_raw_data = F)
 
 modelo = lgb.train(data = entrenamiento, objective = 'binary',
