@@ -83,7 +83,6 @@ for( vcol in campos_lags )
   
   dataset[, paste0(vcol, "_delta1") := get(vcol) - get(paste0( vcol, "_lag1"))]
   dataset[, paste0(vcol, "_delta2") := get(vcol) - get( paste0(vcol, '_lag2') ) ]
-  dataset[, paste0(vcol, '_delta3') := get( paste0(vcol, '_lag1') ) - get( paste0(vcol, '_lag2') ) ]
 }
 
 cat('imprimiendo dataset fe_exthist_lags_deltas\n')
