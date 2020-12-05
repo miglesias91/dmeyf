@@ -141,7 +141,7 @@ dataset[ foto_mes==201910,  mcajeros_propios_descuentos   := NA ]
 
 dataset[ foto_mes==202001,  cliente_vip   := NA ]
 
-
+cat('arreglos hechos.\n')
 
 
 #INICIO de la seccion donde se deben hacer cambios con variables nuevas
@@ -163,7 +163,7 @@ dataset[ , mv_status07       := ifelse( is.na(Master_status),
 
 
 #combino MasterCard y Visa
-dataset[ , mv_default              := pmax( Master_default, Visa_default, na.rm = TRUE) ]
+# dataset[ , mv_default              := pmax( Master_default, Visa_default, na.rm = TRUE) ]
 dataset[ , mv_mfinanciacion_limite := rowSums( cbind( Master_mfinanciacion_limite,  Visa_mfinanciacion_limite) , na.rm=TRUE ) ]
 
 dataset[ , mv_Fvencimiento         := pmin( Master_Fvencimiento, Visa_Fvencimiento, na.rm = TRUE) ]
@@ -205,6 +205,7 @@ dataset[ , mvr_mconsumototal       := mv_mconsumototal  / mv_mlimitecompra ]
 dataset[ , mvr_mpagominimo         := mv_mpagominimo  / mv_mlimitecompra ]
 
 
+cat('nuevas combinaciones creadas.\n')
 #FIN de la seccion donde se deben hacer cambios con variables nuevas
 
 columnas_extendidas <-  copy( setdiff(  colnames(dataset), columnas_originales ) )
@@ -245,6 +246,7 @@ columnas_no_procesar  <- c( "numero_de_cliente", "foto_mes", "clase_ternaria" )
 #agrego al dataset las TENDENCIAS
 columnas_originales_a_procesar  <- setdiff( columnas_originales,  columnas_no_procesar  )  
 
+cat('procesando tendencias, min, max y avg para originales.\n')
 for(  campo  in  columnas_originales_a_procesar )
 {
    campo_idx     <-   match( campo,  names(dataset) )
@@ -259,8 +261,11 @@ for(  campo  in  columnas_originales_a_procesar )
    
    #Por ahora, no agrego el promedio
    dataset[ , paste( campo, "__avg" , sep="" ):= nueva_col[ (3*last +1):(4*last) ]  ]
+   
+   cat(campo,' lista.\n')
 }
 
+cat('tendencias, min, max y avg para originales creadas.\n')
 
 #dejo la clase como ultimo campo
 nuevo_orden <-  c( setdiff( colnames( dataset ) , "clase_ternaria" ) , "clase_ternaria" )
@@ -278,6 +283,7 @@ gc()
 
 columnas_extendidas_a_procesar  <- setdiff( columnas_extendidas,  columnas_no_procesar  )  
 
+cat('procesando tendencias, min, max y avg para nuevas/extendidas.\n')
 for(  campo  in  columnas_extendidas_a_procesar )
 {
    campo_idx     <-   match( campo,  names(dataset) )
@@ -292,8 +298,10 @@ for(  campo  in  columnas_extendidas_a_procesar )
    
    #Por ahora, no agrego el promedio
    dataset[ , paste( campo, "__avg" , sep="" ):= nueva_col[ (3*last +1):(4*last) ]  ]
+   
+   cat(campo,' lista.\n')
 }
-
+cat('tendencias, min, max y avg para originales creadas.\n')
 
 #dejo la clase como ultimo campo
 nuevo_orden <-  c( setdiff( colnames( dataset ) , "clase_ternaria" ) , "clase_ternaria" )
