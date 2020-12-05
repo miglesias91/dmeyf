@@ -176,7 +176,7 @@ for( vprob_corte  in (25:25)/100 )  #de 0.15 a 0.35
   fwrite( entrega, logical01=TRUE, sep=",",  file= paste0("~/buckets/b1/work/BORRADOR_lineademuerte_04_", vprob_corte*100, ".csv") )
   
   data = data.table('numero_de_cliente' = dataset_aplicacion[, numero_de_cliente], 'prob' = prediccion_202005)
-  fwrite(data, sep = ',',  file = paste0(path_salida,'.probs'))
+  fwrite(data, sep = ',',  file = paste0("~/buckets/b1/work/BORRADOR_lineademuerte_04.probs"))
 }
 
 #Se deben probar con el metodo de busqueda binaria contra el leaderboard publico las salidas, y quedarse con el mejor
