@@ -176,6 +176,10 @@ modelo_final <- lgb.train(data= dBO_train,
                           # early_stopping_rounds=  200,
                           learning_rate= 0.01,  #ATENCION, este es el valor que se cambia
                           min_data_in_leaf= as.integer( run$x$pmin_data_in_leaf ),
+                          num_leaves = as.integer( run$x$pnum_leaves ),
+                          min_gain_to_split = as.numeric(run$x$pmin_gain_to_split),
+                          lambda_l1 = as.numeric(run$x$plambda_l1),
+                          lambda_l2 = as.numeric(run$x$plambda_l2),
                           feature_pre_filter= FALSE,
                           feature_fraction= 0.25,
                           verbose= -1,
@@ -192,10 +196,10 @@ for( vprob_corte  in (25:25)/100 )  #de 0.15 a 0.35
                                    "estimulo"=  (prediccion_202005> vprob_corte)  ) )
 
   #genero el archivo de salida
-  fwrite( entrega, logical01=TRUE, sep=",",  file= paste0("~/buckets/b1/work/BORRADOR_lineademuerte_04_", vprob_corte*100, ".csv") )
+  fwrite( entrega, logical01=TRUE, sep=",",  file= paste0("~/buckets/b1/work/lineademuerte_v2_", vprob_corte*100, ".csv") )
   
   data = data.table('numero_de_cliente' = dataset_aplicacion[, numero_de_cliente], 'prob' = prediccion_202005)
-  fwrite(data, sep = ',',  file = paste0("~/buckets/b1/work/BORRADOR_lineademuerte_04.probs"))
+  fwrite(data, sep = ',',  file = paste0("~/buckets/b1/work/lineademuerte_v2.probs"))
 }
 
 #Se deben probar con el metodo de busqueda binaria contra el leaderboard publico las salidas, y quedarse con el mejor
