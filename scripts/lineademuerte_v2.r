@@ -11,9 +11,9 @@ require("DiceKriging")
 require("mlrMBO")
 
 #en estos archivos queda el resultado
-kbayesiana  <-  paste0("~/buckets/b2/opt_bayesiana_lgbm/linea_de_muerte.RDATA")
+kbayesiana  <-  paste0("~/buckets/b2/opt_bayesiana_lgbm/linea_de_muertev2.RDATA")
 
-kBO_iter    <-  10  #cantidad de iteraciones de la Optimizacion Bayesiana
+kBO_iter    <-  30  #cantidad de iteraciones de la Optimizacion Bayesiana
 
 #------------------------------------------------------------------------------
 #esta es la funcion de ganancia, que se busca optimizar
@@ -64,29 +64,29 @@ estimar_lightgbm <- function( x )
 }
 #------------------------------------------------------------------------------
 #Aqui comienza el programa
-dataset  <- fread("~/buckets/b1/datasets/fe_exthist.txt.gz")
+dataset  <- fread("~/buckets/b1/datasets/fe_exthist_lags_deltas.txt.gz")
 
-cat('lei el dataset\n')
-
-campos_lags  <- setdiff(  colnames(dataset) ,  c("clase_ternaria","clase01", "numero_de_cliente","foto_mes") )
-
-#agreglo los lags de orden 1
-setorderv( dataset, c("numero_de_cliente","foto_mes") )
-dataset[,  paste0( campos_lags, "_lag1") :=shift(.SD, 1, NA, "lag"), by=numero_de_cliente, .SDcols= campos_lags]
-
-#agrego los deltas de los lags, de una forma nada elegante
-cat('proceso campos_lags\n')
-for( vcol in campos_lags )
-{
-  cat(vcol,'\n')
-  dataset[, paste0(vcol, "_delta1") := get(vcol) - get(paste0( vcol, "_lag1"))]
-}
-
-cat('imprimiendo dataset fe_exthist_lags_deltas\n')
-fwrite(dataset, file = "~/buckets/b1/datasets/fe_exthist_lags_deltas.txt.gz", sep = '\t')
-cat('saliendo\n')
-
-return()
+# cat('lei el dataset\n')
+# 
+# campos_lags  <- setdiff(  colnames(dataset) ,  c("clase_ternaria","clase01", "numero_de_cliente","foto_mes") )
+# 
+# #agreglo los lags de orden 1
+# setorderv( dataset, c("numero_de_cliente","foto_mes") )
+# dataset[,  paste0( campos_lags, "_lag1") :=shift(.SD, 1, NA, "lag"), by=numero_de_cliente, .SDcols= campos_lags]
+# 
+# #agrego los deltas de los lags, de una forma nada elegante
+# cat('proceso campos_lags\n')
+# for( vcol in campos_lags )
+# {
+#   cat(vcol,'\n')
+#   dataset[, paste0(vcol, "_delta1") := get(vcol) - get(paste0( vcol, "_lag1"))]
+# }
+# 
+# cat('imprimiendo dataset fe_exthist_lags_deltas\n')
+# fwrite(dataset, file = "~/buckets/b1/datasets/fe_exthist_lags_deltas.txt.gz", sep = '\t')
+# cat('saliendo\n')
+# 
+# return()
 
 #paso la clase a binaria que tome valores {0,1}  enteros
 dataset[ , clase01 :=  ifelse( clase_ternaria=="BAJA+2", 1L, 0L)  ]
